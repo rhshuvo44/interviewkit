@@ -10,7 +10,7 @@ export function HeroSection({
 }) {
   return (
     <section className="flex flex-col items-center justify-center pt-20 pb-16 text-center md:pt-32 md:pb-28">
-      <div className="animate-in fade-in slide-in-from-bottom-3 duration-1000">
+      <div className="animate-in fade-in slide-in-from-bottom-3 duration-1000 z-10">
         <Link
           href="#"
           className="command-pill mb-8 text-muted-foreground"
