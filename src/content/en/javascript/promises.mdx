@@ -1,0 +1,143 @@
+---
+title: "Promises"
+description: "Asynchronous operations and Error handling with Promises."
+---
+
+# Promises
+
+Promises are the foundation of modern asynchronous JavaScript. They represent a value that may be available now, later, or never.
+
+---
+
+## Creating Promises
+
+```javascript
+const myPromise = new Promise((resolve, reject) => {
+  const success = true;
+  if (success) {
+    resolve("Done!");
+  } else {
+    reject(new Error("Something went wrong"));
+  }
+});
+```
+
+---
+
+## Consuming Promises
+
+```javascript
+myPromise
+  .then((value) => console.log(value))    // "Done!"
+  .catch((error) => console.error(error)) // handles rejection
+  .finally(() => console.log("cleanup")); // runs always
+```
+
+> **Interview Tip:** Always return from `.then()` to chain properly, and always have a `.catch()` at the end.
+
+---
+
+## Promise Chaining
+
+```javascript
+fetch("/api/user")
+  .then((res) => res.json())
+  .then((user) => fetch(`/api/posts/${user.id}`))
+  .then((res) => res.json())
+  .then((posts) => console.log(posts))
+  .catch((err) => console.error(err));
+```
+
+---
+
+## Static Promise Methods
+
+```javascript
+// All must resolve
+Promise.all([fetch("/a"), fetch("/b"), fetch("/c")])
+  .then(([a, b, c]) => console.log("All done"));
+
+// First to resolve wins
+Promise.race([fetch("/slow"), fetch("/fast")])
+  .then((fastest) => console.log(faster));
+
+// First to resolve or reject
+Promise.any([fetch("/a"), fetch("/b")])
+  .then((first) => console.log(first));
+
+// Wait for all, even rejections
+Promise.allSettled([fetch("/a"), fetch("/b")])
+  .then((results) => {
+    results.forEach((result) => {
+      if (result.status === "fulfilled") console.log(result.value);
+      else console.log(result.reason);
+    });
+  });
+```
+
+---
+
+## Async/Await
+
+Syntactic sugar over Promises:
+
+```javascript
+async function getUser() {
+  try {
+    const res = await fetch("/api/user");
+    const user = await res.json();
+    return user;
+  } catch (error) {
+    console.error("Failed:", error);
+    throw error;
+  }
+}
+```
+
+### Parallel Execution
+
+```javascript
+// Sequential (slow)
+const users = await fetchUsers();
+const posts = await fetchPosts();
+
+// Parallel (fast)
+const [users, posts] = await Promise.all([
+  fetchUsers(),
+  fetchPosts(),
+]);
+```
+
+---
+
+## Common Pitfalls
+
+**Forgetting to return in .then():**
+```javascript
+// Wrong
+promise.then((data) => { process(data); });
+
+// Right
+promise.then((data) => { process(data); return data; });
+```
+
+**Uncaught rejections:**
+```javascript
+// Always add .catch() or handle in try/catch
+async function risky() {
+  try {
+    await mightFail();
+  } catch (e) {
+    handleError(e);
+  }
+}
+```
+
+---
+
+## Interview Summary
+
+- Promises represent eventual completion or failure of an async operation.
+- `.then()/.catch()/.finally()` for chaining, `async/await` for readability.
+- `Promise.all`, `Promise.race`, `Promise.allSettled`, `Promise.any` for concurrency.
+- Always handle rejections — unhandled rejections crash Node.js processes.

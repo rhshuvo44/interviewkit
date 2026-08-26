@@ -1,0 +1,150 @@
+---
+title: "Closures"
+description: "Understanding lexical scoping and closures in JavaScript."
+---
+
+# Closures
+
+Closures are one of the most powerful and frequently tested concepts in JavaScript interviews. A closure gives a function access to its outer scope's variables even after the outer function has returned.
+
+---
+
+## What is a Closure?
+
+A closure is formed when a function **captures variables from its enclosing lexical scope**.
+
+```javascript
+function outer() {
+  const message = "Hello";
+  function inner() {
+    console.log(message); // inner "closes over" message
+  }
+  return inner;
+}
+
+const fn = outer();
+fn(); // "Hello" — message is still accessible!
+```
+
+> **Key Insight:** The `inner` function doesn't just have a copy of `message` — it maintains a **reference** to the live variable in `outer`'s scope.
+
+---
+
+## Lexical Scoping
+
+JavaScript uses lexical (static) scoping: a function's scope is determined by **where it's defined**, not where it's called.
+
+```javascript
+let x = 10;
+
+function foo() {
+  console.log(x); // 10 — defined in global scope
+}
+
+function bar() {
+  let x = 20;
+  foo(); // still logs 10, not 20!
+}
+
+bar();
+```
+
+---
+
+## Practical Closure Patterns
+
+### Factory Functions
+
+```javascript
+function createMultiplier(multiplier) {
+  return function (number) {
+    return number * multiplier;
+  };
+}
+
+const double = createMultiplier(2);
+const triple = createMultiplier(3);
+
+double(5); // 10
+triple(5); // 15
+```
+
+### Event Handlers
+
+```javascript
+function setupButton(buttonId) {
+  let clickCount = 0;
+  const button = document.getElementById(buttonId);
+  button.addEventListener("click", () => {
+    clickCount++;
+    console.log(`Button clicked ${clickCount} times`);
+  });
+}
+```
+
+### Module Pattern (Pre-ES6)
+
+```javascript
+const Counter = (function () {
+  let count = 0;
+  return {
+    increment: () => ++count,
+    decrement: () => --count,
+    getCount: () => count,
+  };
+})();
+```
+
+---
+
+## Closures in Loops — Classic Trap
+
+```javascript
+// Problem: var is function-scoped
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 1000);
+}
+// Output: 3, 3, 3
+
+// Solution 1: let (block-scoped)
+for (let i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 1000);
+}
+// Output: 0, 1, 2
+
+// Solution 2: IIFE
+for (var i = 0; i < 3; i++) {
+  (function (j) {
+    setTimeout(() => console.log(j), 1000);
+  })(i);
+}
+// Output: 0, 1, 2
+```
+
+---
+
+## Memory Considerations
+
+Closures keep references to outer variables alive. This can cause memory leaks:
+
+```javascript
+function processLargeData() {
+  const hugeData = new Array(1000000).fill("x");
+  return function () {
+    // If we never use hugeData but keep this function alive,
+    // hugeData stays in memory
+    return "done";
+  };
+}
+```
+
+> **Best Practice:** Only close over variables you actually need. Nullify references when they're no longer needed in long-lived applications.
+
+---
+
+## Interview Summary
+
+- Closures allow functions to access outer scope variables after the outer function returns.
+- Lexical scoping means scope is determined at definition time, not call time.
+- The `var` in loop closure trap is a classic interview question — use `let` or IIFE.
+- Closures power modules, factories, partial application, and memoization.

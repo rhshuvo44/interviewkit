@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isValidLocale, type Locale } from "@/lib/i18n";
+import { CommandPalette } from "@/components/CommandPalette";
 
 export function generateStaticParams() {
   return [{ locale: "en" }, { locale: "bn" }];
@@ -29,6 +30,7 @@ export default async function LocaleLayout({
   return (
     <div className="relative flex min-h-screen flex-col">
       {children}
+      <CommandPalette locale={locale} />
     </div>
   );
 }

@@ -1,0 +1,83 @@
+---
+title: "Aggregation Pipeline"
+description: "Data transformation and analysis with aggregation stages."
+---
+
+# Aggregation Pipeline
+
+The aggregation pipeline is MongoDB's framework for data transformation. Documents pass through pipeline stages sequentially.
+
+---
+
+## Basic Pipeline
+
+```javascript
+db.orders.aggregate([
+  { $match: { status: "completed" } },         // Filter
+  { $group: {                                   // Group
+      _id: "$customerId",
+      totalSpent: { $sum: "$amount" },
+      orderCount: { $sum: 1 }
+    }
+  },
+  { $sort: { totalSpent: -1 } },               // Sort
+  { $limit: 10 }                                // Limit
+]);
+```
+
+---
+
+## Common Stages
+
+```javascript
+// $match — Filter documents
+{ $match: { status: "active", age: { $gte: 18 } } }
+
+// $project — Reshape documents
+{ $project: { name: 1, email: 1, fullName: { $concat: ["$first", " ", "$last"] } } }
+
+// $unwind — Deconstruct array field
+{ $unwind: "$tags" }
+
+// $group — Group by key
+{ $group: { _id: "$category", count: { $sum: 1 } } }
+
+// $lookup — Join collections (like LEFT JOIN)
+{ $lookup: { from: "products", localField: "productId", foreignField: "_id", as: "product" } }
+```
+
+---
+
+## Real-world Example: Analytics
+
+```javascript
+db.events.aggregate([
+  { $match: { type: "pageview", timestamp: { $gte: ISODate("2024-01-01") } } },
+  { $group: {
+      _id: { page: "$url", date: { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } } },
+      views: { $sum: 1 },
+      uniqueUsers: { $addToSet: "$userId" }
+    }
+  },
+  { $project: { views: 1, uniqueCount: { $size: "$uniqueUsers" } } },
+  { $sort: { views: -1 } }
+]);
+```
+
+---
+
+## Performance Tips
+
+- Place `$match` early to reduce documents in pipeline
+- Use indexes — `$match` and `$sort` can use indexes
+- Avoid `$unwind` on large arrays when possible
+- Use `$limit` early if you only need top N results
+
+---
+
+## Interview Summary
+
+- Aggregation pipeline processes documents through sequential stages
+- Common stages: `$match`, `$group`, `$project`, `$sort`, `$lookup`, `$unwind`
+- Think of it as MongoDB's version of SQL's GROUP BY, JOIN, and WHERE
+- Always put `$match` first for performance

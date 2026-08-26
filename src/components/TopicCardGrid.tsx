@@ -7,8 +7,15 @@ import {
   Database,
   Share2,
   ArrowRight,
+  FileCode,
+  Layout,
+  Atom,
+  Boxes,
+  Table,
+  Brain,
+  Container,
 } from "lucide-react";
-import { homepageTopics, getTopicBySlug, type TopicSlug } from "@/lib/topics";
+import { homepageTopics, getTopicBySlug } from "@/lib/topics";
 
 const iconMap: Record<string, React.ComponentType<any>> = {
   code: Code,
@@ -17,6 +24,13 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   server: Server,
   database: Database,
   share: Share2,
+  "file-code": FileCode,
+  layout: Layout,
+  atom: Atom,
+  boxes: Boxes,
+  table: Table,
+  brain: Brain,
+  container: Container,
 };
 
 export function TopicCardGrid({ locale }: { locale: string }) {

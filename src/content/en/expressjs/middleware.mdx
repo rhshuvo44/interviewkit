@@ -1,0 +1,101 @@
+---
+title: "Middleware Deep Dive"
+description: "Custom middleware, error handling, and authentication patterns."
+---
+
+# Middleware Deep Dive
+
+Middleware is the backbone of Express.js. Understanding how to write, compose, and debug middleware is essential for any backend developer.
+
+---
+
+## What is Middleware?
+
+A middleware function is any function that receives `(req, res, next)`:
+
+```javascript
+function myMiddleware(req, res, next) {
+  // Do something with req or res
+  req.customData = "hello";
+  next(); // Pass control to next middleware
+}
+```
+
+---
+
+## Types of Middleware
+
+### Application-level
+```javascript
+app.use(middleware);
+app.get("/path", middleware, handler);
+```
+
+### Router-level
+```javascript
+router.use(middleware);
+```
+
+### Error-handling (4 params)
+```javascript
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({ error: err.message });
+});
+```
+
+---
+
+## Built-in Middleware
+
+```javascript
+app.use(express.json());           // Parse JSON bodies
+app.use(express.urlencoded());     // Parse form data
+app.use(express.static("public")); // Serve static files
+```
+
+---
+
+## Authentication Middleware
+
+```javascript
+function authMiddleware(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "No token" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: "Invalid token" });
+  }
+}
+
+// Protected routes
+app.get("/profile", authMiddleware, (req, res) => {
+  res.json(req.user);
+});
+```
+
+---
+
+## Middleware Execution Order
+
+```javascript
+app.use(A);    // 1st
+app.use(B);    // 2nd
+app.get("/", C); // 3rd (only for GET /)
+
+// A → B → C → response
+```
+
+> **Interview Tip:** Middleware executes in the order it's registered. Missing `next()` will halt the chain.
+
+---
+
+## Interview Summary
+
+- Middleware functions take `(req, res, next)` — error middleware adds `err`
+- Always call `next()` or send a response
+- Authentication, logging, and validation are common middleware use cases
+- Order matters — register middleware before the routes that need it

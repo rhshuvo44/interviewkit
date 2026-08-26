@@ -126,10 +126,18 @@ export const topics: TopicMeta[] = [
 export const homepageTopics: TopicSlug[] = [
   "javascript",
   "typescript",
+  "python",
+  "next",
+  "react",
   "nodejs",
   "expressjs",
+  "nestjs",
   "mongodb",
+  "sql",
+  "postgresql",
   "system-design",
+  "problem-solving",
+  "devops",
 ];
 
 export function getTopicBySlug(slug: string): TopicMeta | undefined {

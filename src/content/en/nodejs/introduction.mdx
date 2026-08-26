@@ -1,0 +1,84 @@
+---
+title: "Introduction to Node.js"
+description: "Understanding the Node.js runtime, V8 engine, and non-blocking I/O model."
+---
+
+# Introduction to Node.js
+
+Node.js is a JavaScript runtime built on Chrome's V8 engine that allows you to run JavaScript on the server side.
+
+---
+
+## What is Node.js?
+
+Node.js is:
+- A **runtime environment** for JavaScript outside the browser
+- Built on **Google's V8 JavaScript engine**
+- **Event-driven** and **non-blocking** (asynchronous I/O)
+- Single-threaded but highly concurrent
+
+```javascript
+// Simple HTTP server
+const http = require("http");
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Hello World!\n");
+});
+
+server.listen(3000, () => {
+  console.log("Server running at http://localhost:3000/");
+});
+```
+
+---
+
+## Why Node.js?
+
+- **Fast:** V8 compiles JavaScript to native machine code
+- **Scalable:** Non-blocking I/O handles thousands of concurrent connections
+- **Full-stack JavaScript:** Use one language for frontend and backend
+- **NPM:** Largest package ecosystem in the world
+
+---
+
+## Node.js Architecture
+
+```
+┌─────────────────────┐
+│     Application     │
+├─────────────────────┤
+│   Node.js APIs      │
+├─────────────────────┤
+│   libuv (Threads)   │
+├─────────────────────┤
+│     V8 Engine       │
+├─────────────────────┤
+│  Operating System   │
+└─────────────────────┘
+```
+
+> **Interview Tip:** Node.js uses a **single-threaded event loop** with **libuv** for handling async operations in the background via a thread pool (default 4 threads).
+
+---
+
+## CommonJS vs ES Modules
+
+```javascript
+// CommonJS
+const express = require("express");
+module.exports = { app };
+
+// ES Modules (Node 14+)
+import express from "express";
+export default app;
+```
+
+---
+
+## Interview Summary
+
+- Node.js runs JavaScript on the server using V8 engine
+- Non-blocking I/O makes it great for I/O-heavy applications
+- Single-threaded event loop with libuv thread pool
+- Use CommonJS (`require`) or ES Modules (`import`)

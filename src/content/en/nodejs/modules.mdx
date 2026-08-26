@@ -1,0 +1,81 @@
+---
+title: "Modules and NPM"
+description: "CommonJS, ES Modules, and package management in Node.js."
+---
+
+# Modules and NPM
+
+Modules are the building blocks of any Node.js application. Understanding the module system is crucial for writing maintainable code.
+
+---
+
+## CommonJS (CJS)
+
+```javascript
+// math.js
+function add(a, b) { return a + b; }
+module.exports = { add };
+
+// app.js
+const { add } = require("./math");
+console.log(add(2, 3)); // 5
+```
+
+### Module Caching
+```javascript
+// Node.js caches modules after first require
+const config = require("./config"); // reads file
+const config2 = require("./config"); // returns cached version
+```
+
+---
+
+## ES Modules (ESM)
+
+```javascript
+// utils.mjs or "type": "module" in package.json
+export function add(a, b) { return a + b; }
+export default class Logger { /* ... */ }
+
+// app.mjs
+import Logger, { add } from "./utils.mjs";
+```
+
+### Key Differences
+
+| Feature | CommonJS | ES Modules |
+|---------|----------|------------|
+| Syntax | `require()` | `import` |
+| Loading | Synchronous | Asynchronous |
+| Resolution | Runtime | Static (compile-time) |
+| `this` at top level | `module.exports` | `undefined` |
+
+---
+
+## NPM (Node Package Manager)
+
+```bash
+npm init                    # Create package.json
+npm install express         # Add dependency
+npm install -D typescript   # Dev dependency
+npm update                  # Update all packages
+npm audit                   # Check for vulnerabilities
+npx next build              # Run package binary
+```
+
+### Semantic Versioning
+
+```
+"express": "^4.18.0"
+  ^ = compatible with 4.x.x (>= 4.18.0, < 5.0.0)
+  ~ = patch only (>= 4.18.0, < 4.19.0)
+```
+
+---
+
+## Interview Summary
+
+- CommonJS uses `require()` — synchronous, runtime resolution
+- ES Modules use `import/export` — static, tree-shakeable
+- NPM manages dependencies with semantic versioning
+- `node_modules` can be large — use `.npmignore` or `files` field

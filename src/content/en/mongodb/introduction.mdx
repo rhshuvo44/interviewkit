@@ -1,0 +1,91 @@
+---
+title: "Introduction to MongoDB"
+description: "Document model, collections, and CRUD operations in MongoDB."
+---
+
+# Introduction to MongoDB
+
+MongoDB is a NoSQL document database that stores data in flexible, JSON-like BSON documents.
+
+---
+
+## Document Model
+
+```javascript
+// MongoDB document
+{
+  _id: ObjectId("507f1f77bcf86cd799439011"),
+  name: "Alice",
+  email: "alice@example.com",
+  address: {
+    street: "123 Main St",
+    city: "New York"
+  },
+  hobbies: ["coding", "hiking"]
+}
+```
+
+> **Key Difference:** Unlike relational databases, MongoDB stores related data in embedded documents, not separate tables.
+
+---
+
+## CRUD Operations
+
+```javascript
+// Create
+db.users.insertOne({ name: "Alice", age: 30 });
+db.users.insertMany([{ name: "Bob" }, { name: "Charlie" }]);
+
+// Read
+db.users.find({ age: { $gte: 25 } });
+db.users.findOne({ name: "Alice" });
+
+// Update
+db.users.updateOne({ name: "Alice" }, { $set: { age: 31 } });
+db.users.updateMany({ age: { $lt: 25 } }, { $inc: { age: 1 } });
+
+// Delete
+db.users.deleteOne({ name: "Bob" });
+db.users.deleteMany({ age: { $lt: 18 } });
+```
+
+---
+
+## Query Operators
+
+```javascript
+// Comparison
+{ $gt, $gte, $lt, $lte, $eq, $ne, $in, $nin }
+
+// Logical
+{ $and: [{ age: { $gte: 18 } }, { status: "active" }] }
+{ $or: [{ role: "admin" }, { role: "editor" }] }
+
+// Element
+{ $exists: { email: true } }
+```
+
+---
+
+## Indexing
+
+```javascript
+// Single field
+db.users.createIndex({ email: 1 }, { unique: true });
+
+// Compound index
+db.users.createIndex({ lastName: 1, firstName: 1 });
+
+// Text search index
+db.articles.createIndex({ title: "text", body: "text" });
+```
+
+---
+
+## Interview Summary
+
+- MongoDB stores documents in collections (analogous to tables)
+- Documents use BSON (Binary JSON) format
+- Embedded documents reduce the need for joins
+- Indexes are crucial for query performance — always index fields you query on
+- Use `explain()` to analyze query performance

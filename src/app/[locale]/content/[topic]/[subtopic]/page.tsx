@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Sidebar } from "@/components/Sidebar";
 import { ArticleNav } from "@/components/ArticleNav";
+import { QuizSection } from "@/components/QuizSection";
 import {
   getTopicContent,
   getSubtopic,
@@ -142,6 +143,8 @@ export default async function ArticlePage({
                 }}
               />
             </div>
+
+            <QuizSection topic={topic} />
 
             <ArticleNav
               locale={locale}

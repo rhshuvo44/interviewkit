@@ -1,0 +1,101 @@
+---
+title: "Introduction to Express.js"
+description: "Routing, middleware, and the request/response cycle in Express.js."
+---
+
+# Introduction to Express.js
+
+Express.js is the most popular Node.js web framework. It provides a thin layer of features for building web applications and APIs.
+
+---
+
+## Basic Setup
+
+```javascript
+const express = require("express");
+const app = express();
+
+// Parse JSON bodies
+app.use(express.json());
+
+// Define routes
+app.get("/", (req, res) => {
+  res.json({ message: "Hello World" });
+});
+
+app.post("/users", (req, res) => {
+  const user = req.body;
+  res.status(201).json(user);
+});
+
+app.listen(3000);
+```
+
+---
+
+## Routing
+
+```javascript
+// Route parameters
+app.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+  res.json({ userId: id });
+});
+
+// Route groups
+const apiRouter = express.Router();
+apiRouter.get("/posts", listPosts);
+apiRouter.get("/posts/:id", getPost);
+app.use("/api", apiRouter);
+```
+
+---
+
+## Middleware
+
+Middleware functions have access to `req`, `res`, and `next()`.
+
+```javascript
+// Custom middleware
+function logger(req, res, next) {
+  console.log(`${req.method} ${req.url}`);
+  next();
+}
+
+app.use(logger);
+
+// Error-handling middleware (4 params)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something broke!" });
+});
+```
+
+---
+
+## Request & Response
+
+```javascript
+app.get("/search", (req, res) => {
+  // Query parameters
+  const { q, page } = req.query;
+
+  // Set headers
+  res.set("X-Custom-Header", "value");
+
+  // Send different response types
+  res.json({ results: [] });
+  // res.send("text");
+  // res.sendFile("path/to/file");
+  // res.status(404).json({ error: "Not found" });
+});
+```
+
+---
+
+## Interview Summary
+
+- Express is minimal and unopinionated — you choose your own tools
+- Middleware is the core concept — everything is middleware
+- `req.params` for route params, `req.query` for query strings, `req.body` for POST data
+- Always handle errors with error-handling middleware

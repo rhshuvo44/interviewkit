@@ -1,0 +1,193 @@
+---
+title: "Functions - Parameters, Arrow Functions, IIFE, Closures & Built-ins"
+description: "A comprehensive interview-focused guide covering function parameters, arrow functions, IIFE, scope, closures, and built-in functions."
+---
+
+# Functions — Parameters, Arrow Functions, IIFE, Closures & Built-ins
+
+Functions are the building blocks of JavaScript. Understanding their nuances — from parameter handling to closure mechanics — is essential for interviews and production code.
+
+---
+
+## Function Parameters
+
+### Default Parameters
+
+```javascript
+function greet(name = "World") {
+  return `Hello, ${name}!`;
+}
+
+greet();       // "Hello, World!"
+greet("Alice"); // "Hello, Alice!"
+```
+
+### Rest Parameters
+
+```javascript
+function sum(...numbers) {
+  return numbers.reduce((acc, n) => acc + n, 0);
+}
+
+sum(1, 2, 3); // 6
+```
+
+> **Interview Tip:** Rest parameters always come last in the parameter list.
+
+---
+
+## Arrow Functions
+
+Arrow functions provide a shorter syntax and ** lexically bind `this`**.
+
+```javascript
+// Regular function
+function add(a, b) {
+  return a + b;
+}
+
+// Arrow function
+const add = (a, b) => a + b;
+
+// Single parameter — parens optional
+const double = x => x * 2;
+
+// No parameters — empty parens required
+const log = () => console.log("hello");
+```
+
+### Arrow Functions vs Regular Functions
+
+| Feature | Arrow Function | Regular Function |
+|---------|---------------|------------------|
+| `this` binding | Lexical (inherited) | Dynamic (call site) |
+| `arguments` object | Not available | Available |
+| Can be used as constructor | No | Yes |
+| Hoisting | Not hoisted | Hoisted (function declarations) |
+
+```javascript
+const obj = {
+  name: "Alice",
+  regular() {
+    return this.name; // "Alice"
+  },
+  arrow: () => {
+    return this.name; // undefined (inherits from outer scope)
+  },
+};
+```
+
+> **Interview Tip:** Never use arrow functions as object methods or constructors.
+
+---
+
+## IIFE (Immediately Invoked Function Expressions)
+
+An IIFE runs as soon as it's defined:
+
+```javascript
+(function () {
+  const secret = "private";
+  console.log(secret);
+})();
+
+// With arrow function
+(() => {
+  console.log("executed immediately");
+})();
+```
+
+### Use Cases
+
+- **Encapsulation:** Create private scope.
+- **Initialization:** Run setup code without polluting global scope.
+- **Async IIFE:**
+
+```javascript
+(async () => {
+  const data = await fetch("/api/data");
+  const json = await data.json();
+  console.log(json);
+})();
+```
+
+---
+
+## Closures
+
+A closure is a function that **remembers the variables from its outer scope**, even after the outer function has returned.
+
+```javascript
+function createCounter() {
+  let count = 0;
+  return {
+    increment: () => ++count,
+    decrement: () => --count,
+    getCount: () => count,
+  };
+}
+
+const counter = createCounter();
+counter.increment(); // 1
+counter.increment(); // 2
+counter.getCount();  // 2
+```
+
+### Common Closure Patterns
+
+**Data Privacy:**
+```javascript
+function createBankAccount(initialBalance) {
+  let balance = initialBalance;
+  return {
+    deposit: (amount) => (balance += amount),
+    withdraw: (amount) => (balance -= amount),
+    getBalance: () => balance,
+  };
+}
+```
+
+**Partial Application:**
+```javascript
+function multiply(a) {
+  return (b) => a * b;
+}
+const double = multiply(2);
+double(5); // 10
+```
+
+> **Interview Trap:** Closures can cause memory leaks if large objects are held in scope unnecessarily.
+
+---
+
+## Built-in Functions
+
+### Array Methods
+
+```javascript
+[1, 2, 3].map((x) => x * 2);       // [2, 4, 6]
+[1, 2, 3].filter((x) => x > 1);    // [2, 3]
+[1, 2, 3].reduce((acc, x) => acc + x, 0); // 6
+[1, 2, 3].find((x) => x > 1);      // 2
+[1, 2, 3].some((x) => x > 2);      // true
+[1, 2, 3].every((x) => x > 0);     // true
+```
+
+### Object Methods
+
+```javascript
+Object.keys({ a: 1, b: 2 });    // ["a", "b"]
+Object.values({ a: 1, b: 2 });  // [1, 2]
+Object.entries({ a: 1, b: 2 }); // [["a", 1], ["b", 2]]
+Object.assign({}, { a: 1 }, { b: 2 }); // { a: 1, b: 2 }
+```
+
+---
+
+## Interview Summary
+
+- Default and rest parameters provide flexible function signatures.
+- Arrow functions lexically bind `this` — great for callbacks, bad for methods.
+- IIFEs create private scopes and are useful for async initialization.
+- Closures allow functions to retain access to outer scope variables.
+- Know the difference between `call`, `apply`, and `bind`.
