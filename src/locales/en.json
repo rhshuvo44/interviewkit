@@ -1,6 +1,6 @@
 {
   "site": {
-    "name": "InterviewKit",
+    "name": "Interview Kit",
     "tagline": "Ace Your Tech Interviews",
     "description": "Curated guides, deep dives into system architecture, and the technical mental models required to ace roles at top-tier companies."
   },
@@ -12,7 +12,7 @@
     "github": "Star on GitHub"
   },
   "hero": {
-    "announcement": "InterviewKit 1.0 is officially here",
+    "announcement": "Interview Kit 1.0 is officially here",
     "readAnnouncement": "Read the announcement",
     "headline1": "Master Your Next",
     "headline2": "Tech Interview.",
@@ -22,7 +22,7 @@
   },
   "features": {
     "title": "Documentation optimized for developer experience.",
-    "description": "We believe that interview preparation should be structured, deep, and intuitive. InterviewKit provides you with the mental models required to excel in modern engineering roles.",
+    "description": "We believe that interview preparation should be structured, deep, and intuitive. Interview Kit provides you with the mental models required to excel in modern engineering roles.",
     "deepDive": "Deep Dive Patterns",
     "deepDiveDesc": "Beyond basics, we cover real-world architecture.",
     "algorithms": "Optimized Algorithms",
@@ -31,7 +31,7 @@
     "systemDesc": "Mastering large scale backend and frontend systems."
   },
   "newsletter": {
-    "title": "Stay update with InterviewKit.",
+    "title": "Stay update with Interview Kit.",
     "description": "Zero spam. Only high-quality technical content and new interview patterns.",
     "emailPlaceholder": "Email address",
     "subscribe": "Subscribe",
@@ -39,7 +39,7 @@
   },
   "footer": {
     "tagline": "Mastering the art of technical interviews, one topic at a time.",
-    "copyright": "© 2026 InterviewKit. Built by Touhidur Zaman.",
+    "copyright": "© 2026 Interview Kit. Built by Ripon Hossain Shuvo.",
     "github": "GitHub",
     "twitter": "Twitter",
     "discord": "Discord"

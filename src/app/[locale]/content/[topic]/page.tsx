@@ -22,8 +22,8 @@ export async function generateMetadata({
   const topicData = getTopicBySlug(topic);
   return {
     title: topicData
-      ? `${topicData.title} - InterviewKit`
-      : "InterviewKit",
+      ? `${topicData.title} - Interview Kit`
+      : "Interview Kit",
   };
 }
 

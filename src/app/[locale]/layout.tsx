@@ -13,7 +13,7 @@ export function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Metadata {
   return {
-    title: "InterviewKit - Ace Your Tech Interviews",
+    title: "Interview Kit - Ace Your Tech Interviews",
   };
 }
 

@@ -23,7 +23,7 @@ export function Header({ locale }: { locale: string }) {
       <div className="container mx-auto flex h-14 max-w-6xl items-center justify-between px-4 md:px-8">
         <div className="flex items-center gap-4 md:gap-8">
           <Link href={`/${locale}`} className="text-sm font-bold">
-            InterviewKit
+            Interview Kit
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (

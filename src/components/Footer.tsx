@@ -6,7 +6,7 @@ export function Footer({ t }: { t: Record<string, any> }) {
       <div className="container mx-auto max-w-6xl px-4 md:px-8">
         <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
           <div>
-            <p className="text-sm font-semibold">InterviewKit</p>
+            <p className="text-sm font-semibold">Interview Kit</p>
             <p className="mt-1 text-xs text-muted-foreground">
               {t.footer.tagline}
             </p>

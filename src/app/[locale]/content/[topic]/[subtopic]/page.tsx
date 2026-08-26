@@ -39,7 +39,7 @@ export async function generateMetadata({
   const { topic, subtopic } = await params;
   const sub = getSubtopic(topic, subtopic);
   return {
-    title: sub ? `${sub.title} - InterviewKit` : "InterviewKit",
+    title: sub ? `${sub.title} - Interview Kit` : "Interview Kit",
     description: sub?.description,
   };
 }

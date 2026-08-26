@@ -6,7 +6,7 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "InterviewKit - Ace Your Tech Interviews",
+  title: "Interview Kit - Ace Your Tech Interviews",
   description:
     "Curated guides, deep dives into system architecture, and the technical mental models required to ace roles at top-tier companies.",
 };
