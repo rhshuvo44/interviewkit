@@ -1,0 +1,93 @@
+---
+title: "Introduction to JavaScript"
+description: "A comprehensive interview-focused introduction to JavaScript covering its history, evolution, versions, execution environments, and how JavaScript works."
+---
+
+# Introduction to JavaScript
+
+JavaScript is arguably the most important programming language in modern software development. Originally built to script simple interactions in web pages, it has evolved into a robust, full-stack language capable of powering web and mobile applications, backend services, and even desktop apps.
+
+> **Interview Focus:** For technical interviews, merely knowing syntax is never enough. Interviewers expect you to understand **how JavaScript works internally**, its execution model, and why certain legacy behaviors exist.
+
+---
+
+## What is JavaScript?
+
+JavaScript (JS) is a **high-level**, **dynamic**, **prototype-based**, **multi-paradigm programming language**.
+
+> **Core Paradigms:** JavaScript is exceptionally versatile. You can write code using **Procedural**, **Object-Oriented** (via Prototypes or Classes), **Functional**, and **Event-Driven** paradigms.
+
+### Key Characteristics You Should Know
+
+- **High-Level & Garbage Collected:** Developers don't manually manage memory (like in C/C++).
+- **Dynamically Typed:** Variables aren't locked into a specific data type at compile time.
+- **Single-Threaded:** Only one operation executes at a time on the main thread.
+- **Asynchronous & Non-blocking:** Achieved via the Event Loop, allowing I/O operations to run in the background.
+- **First-Class Functions:** Functions are treated as variables, meaning they can be passed in or returned from other functions.
+
+---
+
+## A Brief History & ECMAScript
+
+Understanding the history of JavaScript isn't just trivia, it explains why the language has certain quirks and why ES6 was such a monumental shift.
+
+### The Birth of JavaScript (1995)
+
+JavaScript was created by Brendan Eich while working at Netscape.
+
+> **Interview Fact:** It was famously developed in just **10 days**. Initially named Mocha, then LiveScript, it was eventually renamed to **JavaScript** as a marketing ploy to ride the popularity wave of Java. Keep in mind: *Java and JavaScript are entirely different languages!*
+
+### The ES6 Revolution (2015)
+
+ECMAScript 6 (also known as ES2015) was the largest update to the language, modernizing it completely.
+
+> **ES6 Must-Knows:** Most modern JS interview questions stem from ES6 features: `let`/`const`, Arrow Functions, Promises, Classes, Destructuring, and Modules.
+
+### Recent Additions (ES7 to Present)
+
+- **ES8 (2017):** `async/await`
+- **ES11 (2020):** Optional Chaining (`?.`) and Nullish Coalescing (`??`)
+- **ES12+:** Logical assignment operators, top-level `await`, and private class fields.
+
+---
+
+## The JavaScript Engine
+
+Since JavaScript is not a compiled language (like Go or C++), it requires an **Engine** to read, interpret, and optimize it on the fly.
+
+> **JIT Compilation:** While historically interpreted, modern JavaScript engines use **Just-In-Time (JIT) Compilation**, marrying the fast startup times of an interpreter with the fast execution of a compiler.
+
+### Popular Engines
+
+- **V8 Engine (Google):** Powers Google Chrome and Node.js. It's the most widely asked about engine in interviews.
+- **SpiderMonkey (Mozilla):** Powers Firefox. (The very first engine ever created!)
+- **JavaScriptCore (Apple):** Powers Safari.
+
+### Where Does JS Run?
+
+Because of these engines, JavaScript operates in two primary environments:
+
+1. **The Browser:** Contains Web APIs (like the DOM, Fetch, and `setTimeout`).
+2. **Node.js (Server):** Uses the V8 engine but replaces Web APIs with system APIs (File System, HTTP servers, etc.).
+
+> **Common Pitfall:** Don't confuse browser features (`window`, `document`) with JavaScript engine features. Variables or functions globally available in Chrome won't necessarily exist in Node.js, and vice versa!
+
+---
+
+## How JavaScript Executes (High-Level)
+
+1. **Parsing:** The engine reads the source code and turns it into an Abstract Syntax Tree (AST).
+2. **Interpretation:** The interpreter (e.g., Ignition in V8) quickly translates the AST into unoptimized bytecode to start execution immediately.
+3. **JIT Compilation:** While the code runs, the compiler (e.g., TurboFan in V8) watches for frequently executed code ("hot paths") and optimizes them into ultra-fast machine code.
+
+---
+
+## Interview Summary
+
+A strong candidate should confidently articulate:
+
+- What JavaScript is and the environments it operates in.
+- The distinction between **JavaScript** and the **ECMAScript** standard.
+- The significance of the **ES6 (2015)** update.
+- The role of the **V8 Engine** and why Node.js is so performant.
+- The high-level concepts of JIT compilation and garbage collection.

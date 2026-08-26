@@ -1,0 +1,104 @@
+---
+title: "Introduction to TypeScript"
+description: "Understanding TypeScript fundamentals, type annotations, and the compiler."
+---
+
+# Introduction to TypeScript
+
+TypeScript is a **statically typed superset of JavaScript** that compiles to plain JavaScript. Developed and maintained by Microsoft, it adds optional type annotations, interfaces, and advanced type system features that help catch errors at compile time rather than runtime.
+
+---
+
+## Why TypeScript?
+
+- **Compile-time error detection:** Catch bugs before they reach production.
+- **Better IDE support:** Autocomplete, refactoring, and navigation.
+- **Self-documenting code:** Types serve as living documentation.
+- **Safer refactoring:** Change a type and see all affected locations.
+- **Scalability:** Essential for large codebases with multiple developers.
+
+---
+
+## Basic Types
+
+```typescript
+// Primitives
+let name: string = "Alice";
+let age: number = 25;
+let isActive: boolean = true;
+
+// Arrays
+let numbers: number[] = [1, 2, 3];
+let names: Array<string> = ["Alice", "Bob"];
+
+// Tuples
+let person: [string, number] = ["Alice", 25];
+
+// Enums
+enum Status {
+  Active = "ACTIVE",
+  Inactive = "INACTIVE",
+}
+
+// Special types
+let anything: any = "can be anything";
+let unknown: unknown = "safer than any";
+```
+
+---
+
+## Interfaces vs Type Aliases
+
+```typescript
+// Interface
+interface User {
+  id: number;
+  name: string;
+  email?: string; // optional
+}
+
+// Type alias
+type Point = {
+  x: number;
+  y: number;
+};
+```
+
+> **Interview Tip:** Interfaces are extendable with `extends`, type aliases use `&` (intersection). Interfaces support declaration merging; types do not.
+
+---
+
+## Generics
+
+Generics allow you to write reusable, type-safe code:
+
+```typescript
+function identity<T>(arg: T): T {
+  return arg;
+}
+
+const result = identity<string>("hello"); // type: string
+```
+
+---
+
+## Utility Types
+
+TypeScript provides built-in utility types:
+
+```typescript
+type Partial<T> = { [K in keyof T]?: T[K] };
+type Required<T> = { [K in keyof T]-?: T[K] };
+type Readonly<T> = { readonly [K in keyof T]: T[K] };
+type Pick<T, K> = { [P in K]: T[P] };
+type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
+```
+
+---
+
+## Interview Summary
+
+- TypeScript is a compile-time tool; it adds no runtime overhead.
+- Know the differences between `interface` and `type`.
+- Understand generics, utility types, and type narrowing.
+- Be able to explain `any`, `unknown`, `never`, and `void`.

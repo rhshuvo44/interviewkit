@@ -1,0 +1,79 @@
+{
+  "site": {
+    "name": "InterviewKit",
+    "tagline": "Ace Your Tech Interviews",
+    "description": "Curated guides, deep dives into system architecture, and the technical mental models required to ace roles at top-tier companies."
+  },
+  "nav": {
+    "content": "Content",
+    "typescript": "TypeScript",
+    "systemDesign": "System Design",
+    "algorithms": "Algorithms",
+    "github": "Star on GitHub"
+  },
+  "hero": {
+    "announcement": "InterviewKit 1.0 is officially here",
+    "readAnnouncement": "Read the announcement",
+    "headline1": "Master Your Next",
+    "headline2": "Tech Interview.",
+    "subtitle": "Curated guides, deep dives into system architecture, and the technical mental models required to ace roles at top-tier companies.",
+    "getStarted": "Get Started",
+    "searchPlaceholder": "Search documentation..."
+  },
+  "features": {
+    "title": "Documentation optimized for developer experience.",
+    "description": "We believe that interview preparation should be structured, deep, and intuitive. InterviewKit provides you with the mental models required to excel in modern engineering roles.",
+    "deepDive": "Deep Dive Patterns",
+    "deepDiveDesc": "Beyond basics, we cover real-world architecture.",
+    "algorithms": "Optimized Algorithms",
+    "algorithmsDesc": "Patterns for problem solving, not just memorization.",
+    "system": "System Excellence",
+    "systemDesc": "Mastering large scale backend and frontend systems."
+  },
+  "newsletter": {
+    "title": "Stay update with InterviewKit.",
+    "description": "Zero spam. Only high-quality technical content and new interview patterns.",
+    "emailPlaceholder": "Email address",
+    "subscribe": "Subscribe",
+    "socialProof": "Join 2,000+ engineers mastering their craft."
+  },
+  "footer": {
+    "tagline": "Mastering the art of technical interviews, one topic at a time.",
+    "copyright": "© 2026 InterviewKit. Built by Touhidur Zaman.",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "discord": "Discord"
+  },
+  "sidebar": {
+    "menu": "Menu",
+    "exploreAll": "Explore all topics",
+    "backTo": "Back to"
+  },
+  "topic": {
+    "coreCurriculum": "Core Curriculum",
+    "fundamentalModules": "Fundamental internals and patterns.",
+    "modules": "Modules",
+    "startLearning": "Start Learning",
+    "interviewReadiness": "Interview Readiness",
+    "interviewQA": "Interview Q&A",
+    "interviewQADesc": "Focused questions and vetted technical answers.",
+    "quickQA": "Quick Questions & Answers",
+    "quickQADesc": "Focused questions and vetted technical answers.",
+    "inThisArticle": "In this article",
+    "madeWith": "Made with \u2764\ufe0f by",
+    "feedback": "For any feedback",
+    "fillForm": "fill this form",
+    "startQuiz": "Start Quiz",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "notFound": {
+    "badge": "Page Not Found",
+    "title": "Lost in the Code?",
+    "description": "Looks like you\u0027ve wandered into the digital void. The page you\u0027re looking for doesn\u0027t exist or has been moved.",
+    "backHome": "Back to Home",
+    "browseJS": "Browse JavaScript",
+    "errorCode": "Error Code: 404",
+    "report": "Report this issue"
+  }
+}

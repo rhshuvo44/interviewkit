@@ -1,0 +1,93 @@
+---
+title: "Introduction to System Design"
+description: "Fundamental concepts of distributed systems and scalability."
+---
+
+# Introduction to System Design
+
+System design interviews test your ability to design large-scale distributed systems. They evaluate your understanding of architecture, scalability, reliability, and trade-offs.
+
+---
+
+## Key Principles
+
+### Scalability
+
+- **Vertical scaling:** Adding more power (CPU, RAM) to a single machine.
+- **Horizontal scaling:** Adding more machines to distribute load.
+
+### Reliability
+
+- **Redundancy:** Multiple copies of data/services.
+- **Fault tolerance:** System continues working when components fail.
+- **Availability:** Percentage of time the system is operational (99.99% = "four nines").
+
+### Performance
+
+- **Latency:** Time to serve a single request.
+- **Throughput:** Number of requests per second.
+
+---
+
+## Building Blocks
+
+### Load Balancers
+
+Distribute incoming traffic across multiple servers:
+
+- **Round Robin:** Simple rotation.
+- **Least Connections:** Route to server with fewest active connections.
+- **IP Hash:** Consistent routing based on client IP.
+
+### Caching
+
+Store frequently accessed data closer to the user:
+
+- **Application-level:** In-memory (Redis, Memcached).
+- **CDN:** Static content at edge locations.
+- **Database:** Query result caching.
+
+### Databases
+
+- **SQL:** Structured data, ACID transactions, complex joins.
+- **NoSQL:** Flexible schema, horizontal scaling, eventual consistency.
+
+### Message Queues
+
+Enable asynchronous communication between services:
+
+- **RabbitMQ:** Traditional message broker.
+- **Kafka:** Event streaming platform.
+- **Redis Pub/Sub:** Lightweight pub/sub.
+
+---
+
+## Common Design Problems
+
+| Problem | Key Concepts |
+|---------|-------------|
+| URL Shortener | Hashing, base62 encoding, database design |
+| Chat System | WebSockets, message ordering, presence |
+| News Feed | Fan-out on write vs read, caching |
+| Rate Limiter | Token bucket, sliding window |
+| Notification System | Message queues, delivery guarantees |
+
+---
+
+## Interview Framework
+
+1. **Requirements:** Functional and non-functional.
+2. **Estimation:** Users, QPS, storage, bandwidth.
+3. **Design:** High-level architecture diagram.
+4. **Deep Dive:** Specific components, databases, APIs.
+5. **Bottlenecks:** Identify and address scaling issues.
+
+---
+
+## Interview Summary
+
+- Always clarify requirements before designing.
+- Draw the high-level architecture first.
+- Discuss trade-offs explicitly.
+- Address scalability, reliability, and performance.
+- Know common patterns: CQRS, event sourcing, microservices.

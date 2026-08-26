@@ -1,0 +1,142 @@
+---
+title: "Variables, Scoping, and Hoisting"
+description: "A comprehensive interview-focused guide covering variable declarations (var, let, const), scoping rules, hoisting mechanics, the Temporal Dead Zone, and variable naming conventions."
+---
+
+# Variables, Scoping, and Hoisting
+
+Understanding how JavaScript manages variables is fundamental to writing correct code and passing technical interviews. This guide covers the three declarations (`var`, `let`, `const`), scoping rules, hoisting behavior, and the Temporal Dead Zone.
+
+---
+
+## Variable Declarations: var, let, const
+
+### var
+
+- **Function-scoped** (not block-scoped).
+- **Hoisted** to the top of its function and initialized with `undefined`.
+- Can be redeclared and reassigned.
+
+```javascript
+function example() {
+  console.log(x); // undefined (hoisted)
+  var x = 10;
+  console.log(x); // 10
+}
+```
+
+### let
+
+- **Block-scoped** (limited to the nearest `{}`).
+- **Hoisted** but NOT initialized — accessing it before declaration throws a `ReferenceError`.
+- Can be reassigned but NOT redeclared in the same scope.
+
+```javascript
+{
+  console.log(y); // ReferenceError (Temporal Dead Zone)
+  let y = 20;
+}
+```
+
+### const
+
+- **Block-scoped** like `let`.
+- **Must be initialized** at declaration.
+- Cannot be reassigned. For objects/arrays, the *reference* is constant, not the contents.
+
+```javascript
+const arr = [1, 2, 3];
+arr.push(4); // Works! (mutation allowed)
+arr = [5, 6, 7]; // TypeError (reassignment)
+```
+
+---
+
+## Scoping Rules
+
+| Declaration | Scope | Hoisted | Initialized |
+|-------------|-------|---------|-------------|
+| `var` | Function | Yes | `undefined` |
+| `let` | Block | Yes | No (TDZ) |
+| `const` | Block | Yes | No (TDZ) |
+
+### Global Scope
+
+Variables declared outside any function or block are globally accessible.
+
+### Function Scope
+
+`var` is scoped to the nearest function, not the nearest block.
+
+### Block Scope
+
+`let` and `const` are scoped to the nearest block (`if`, `for`, `{}`).
+
+```javascript
+if (true) {
+  var a = 1;  // accessible outside
+  let b = 2;  // NOT accessible outside
+  const c = 3; // NOT accessible outside
+}
+console.log(a); // 1
+console.log(b); // ReferenceError
+```
+
+---
+
+## Hoisting
+
+Hoisting is JavaScript's behavior of moving declarations to the top of their scope during compilation.
+
+### var Hoisting
+
+```javascript
+console.log(name); // undefined
+var name = "JavaScript";
+```
+
+### let/const Hoisting (TDZ)
+
+```javascript
+console.log(age); // ReferenceError: Cannot access 'age' before initialization
+let age = 25;
+```
+
+The **Temporal Dead Zone (TDZ)** is the period between hoisting and actual declaration where `let`/`const` variables cannot be accessed.
+
+---
+
+## The Temporal Dead Zone
+
+```javascript
+var x = "outer";
+
+function demo() {
+  console.log(x); // ReferenceError (TDZ for let below)
+  let x = "inner";
+}
+```
+
+> **Interview Tip:** The TDZ exists from the start of the block until the declaration is reached. It prevents accidentally using variables before they're ready.
+
+---
+
+## Naming Conventions
+
+- Use **camelCase** for variables and functions: `userName`, `getUserData()`
+- Use **PascalCase** for classes and constructors: `UserModel`
+- Use **UPPER_SNAKE_CASE** for constants: `MAX_RETRIES`
+- Use meaningful, descriptive names
+- Avoid single-letter names except in loops: `for (let i = 0; ...)`
+- Prefix booleans with `is` or `has`: `isActive`, `hasPermission`
+
+---
+
+## Interview Summary
+
+Key points to articulate in interviews:
+
+- The differences between `var`, `let`, and `const` in terms of scope and hoisting.
+- What the Temporal Dead Zone is and why it exists.
+- Why `const` doesn't make objects immutable.
+- Common hoisting pitfalls and how to avoid them.

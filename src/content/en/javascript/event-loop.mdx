@@ -1,0 +1,130 @@
+---
+title: "Event Loop"
+description: "Mastering the Event Loop, Call Stack, and Macrotasks vs Microtasks."
+---
+
+# Event Loop
+
+The Event Loop is the heart of JavaScript's asynchronous behavior. Understanding it is critical for interviews and for writing performant, non-blocking code.
+
+---
+
+## How JavaScript Handles Async
+
+JavaScript is **single-threaded** but **non-blocking** thanks to the Event Loop. While the Call Stack executes synchronous code, the Web APIs, Callback Queue, and Microtask Queue handle asynchronous operations.
+
+### The Components
+
+1. **Call Stack:** Where synchronous code executes (LIFO).
+2. **Web APIs:** Browser-provided APIs (setTimeout, fetch, DOM events).
+3. **Callback (Macro) Task Queue:** Where callbacks from `setTimeout`, `setInterval`, I/O wait.
+4. **Microtask Queue:** Where `Promise.then`, `queueMicrotask`, `MutationObserver` callbacks go.
+
+---
+
+## Execution Order
+
+The Event Loop follows this priority:
+
+1. Execute all synchronous code (Call Stack).
+2. Drain the **Microtask Queue** (all microtasks).
+3. Execute **one** macrotask from the Callback Queue.
+4. Repeat.
+
+```javascript
+console.log("1");               // Sync
+
+setTimeout(() => {
+  console.log("2");             // Macro
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log("3");             // Micro
+});
+
+console.log("4");               // Sync
+
+// Output: 1, 4, 3, 2
+```
+
+> **Key Insight:** Microtasks always run before macrots. Even `setTimeout(0)` waits for all microtasks to complete.
+
+---
+
+## Microtasks vs Macrotasks
+
+### Microtasks (Higher Priority)
+
+- `Promise.then()` / `catch()` / `finally()`
+- `queueMicrotask()`
+- `MutationObserver`
+- `async/await` (the continuation after `await`)
+
+### Macrotasks (Lower Priority)
+
+- `setTimeout` / `setInterval`
+- `setImmediate` (Node.js)
+- `I/O callbacks`
+- `UI rendering`
+- `requestAnimationFrame`
+
+---
+
+## Common Interview Patterns
+
+### Pattern 1: setTimeout vs Promise
+
+```javascript
+setTimeout(() => console.log("timeout"), 0);
+Promise.resolve().then(() => console.log("promise"));
+// Output: "promise", "timeout"
+```
+
+### Pattern 2: Nested Microtasks
+
+```javascript
+Promise.resolve()
+  .then(() => {
+    console.log("then 1");
+    Promise.resolve().then(() => console.log("then 2"));
+  })
+  .then(() => console.log("then 3"));
+// Output: "then 1", "then 2", "then 3"
+```
+
+### Pattern 3: async/await
+
+```javascript
+async function foo() {
+  console.log("start");
+  await Promise.resolve();
+  console.log("end");
+}
+foo();
+console.log("middle");
+// Output: "start", "middle", "end"
+```
+
+---
+
+## Node.js Event Loop Differences
+
+Node.js has additional phases in its Event Loop:
+
+1. **Timers:** setTimeout, setInterval
+2. **Pending callbacks:** I/O callbacks
+3. **Idle/Prepare:** Internal use
+4. **Poll:** Retrieve new I/O events
+5. **Check:** setImmediate
+6. **Close callbacks:** socket.on('close')
+
+> **Interview Tip:** In Node.js, `process.nextTick()` runs before all microtasks and `setImmediate()` runs after the current poll phase.
+
+---
+
+## Interview Summary
+
+- The Event Loop enables non-blocking I/O in single-threaded JavaScript.
+- Microtasks (Promises) have priority over macrotasks (setTimeout).
+- `async/await` is syntactic sugar over Promises with microtask behavior.
+- Node.js has a more complex Event Loop with multiple phases.

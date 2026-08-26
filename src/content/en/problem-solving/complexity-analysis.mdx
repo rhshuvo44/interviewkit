@@ -1,0 +1,79 @@
+---
+title: "Complexity Analysis (Big-O)"
+description: "Mathematical foundations for analyzing time and space efficiency."
+---
+
+# Complexity Analysis (Big-O)
+
+Big-O notation describes the upper bound of an algorithm's growth rate. It helps us compare algorithms independent of hardware and predict performance at scale.
+
+---
+
+## Why Big-O?
+
+- Predict how an algorithm behaves as input grows.
+- Compare time and space efficiency objectively.
+- Communicate performance characteristics clearly.
+
+---
+
+## Common Complexities
+
+| Big-O | Name | Example |
+|-------|------|---------|
+| O(1) | Constant | Array access by index |
+| O(log n) | Logarithmic | Binary search |
+| O(n) | Linear | Array traversal |
+| O(n log n) | Linearithmic | Merge sort, quicksort |
+| O(n²) | Quadratic | Nested loops, bubble sort |
+| O(2ⁿ) | Exponential | Recursive Fibonacci |
+| O(n!) | Factorial | Generating all permutations |
+
+---
+
+## How to Analyze
+
+1. Identify the input size `n`.
+2. Count the number of operations relative to `n`.
+3. Drop constants and lower-order terms.
+4. Focus on the worst case.
+
+```javascript
+// O(n)
+function findMax(arr) {
+  let max = arr[0];
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > max) max = arr[i];
+  }
+  return max;
+}
+
+// O(n²)
+function hasDuplicate(arr) {
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i + 1; j < arr.length; j++) {
+      if (arr[i] === arr[j]) return true;
+    }
+  }
+  return false;
+}
+```
+
+---
+
+## Space Complexity
+
+Measures auxiliary memory used:
+
+- **O(1):** In-place algorithms (no extra data structures).
+- **O(n):** Arrays, hash maps proportional to input.
+- **O(n²):** 2D matrices.
+
+---
+
+## Interview Summary
+
+- Always analyze both time and space complexity.
+- Know the Big-O of common operations (array, hash map, tree).
+- Be able to optimize from O(n²) to O(n log n) or O(n).
+- Amortized analysis for dynamic arrays and hash tables.
