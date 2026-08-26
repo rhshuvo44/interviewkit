@@ -237,6 +237,34 @@ export const contentData: Record<string, TopicContent> = {
       },
     ],
   },
+  python: {
+    slug: "python",
+    title: "Python",
+    description:
+      "Data structures, decorators, and async patterns.",
+    overview:
+      "Welcome to the Python interview kit. Master Python's dynamic typing, decorators, generators, and asynchronous programming patterns.",
+    subtopics: [
+      {
+        slug: "introduction",
+        title: "Introduction to Python",
+        description:
+          "Python fundamentals, data types, control flow, and the Zen of Python.",
+      },
+      {
+        slug: "decorators-generators",
+        title: "Decorators and Generators",
+        description:
+          "Function decorators, class decorators, generator functions, and yield patterns.",
+      },
+      {
+        slug: "data-structures",
+        title: "Python Data Structures",
+        description:
+          "Lists, tuples, dictionaries, sets, and their time complexities.",
+      },
+    ],
+  },
 };
 
 export function getTopicContent(topicSlug: string): TopicContent | undefined {

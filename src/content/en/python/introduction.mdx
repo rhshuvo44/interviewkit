@@ -1,0 +1,134 @@
+---
+title: "Introduction to Python"
+description: "Python fundamentals, data types, control flow, and the Zen of Python."
+---
+
+# Introduction to Python
+
+Python is a high-level, interpreted, dynamically typed language known for its readability and versatility.
+
+---
+
+## Why Python?
+
+- **Readable:** Significant whitespace enforces clean code
+- **Versatile:** Web, data science, ML/AI, automation, scripting
+- **Massive ecosystem:** PyPI has 400k+ packages
+- **Beginner-friendly** yet powerful enough for production systems
+
+---
+
+## Basic Syntax
+
+```python
+# Variables — no type annotations required
+name = "Alice"
+age = 30
+height = 5.7
+is_active = True
+
+# Type hints (optional, recommended)
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+
+# Multiple assignment
+x, y, z = 1, 2, 3
+a = b = c = 0
+```
+
+---
+
+## Data Types
+
+```python
+# Numeric
+i = 42          # int
+f = 3.14        # float
+c = 1 + 2j      # complex
+
+# String
+s = "hello"
+s = 'hello'
+s = """multi-line"""
+
+# Collections
+lst = [1, 2, 3]           # list (mutable)
+tup = (1, 2, 3)           # tuple (immutable)
+s = {1, 2, 3}             # set
+d = {"key": "value"}      # dict
+
+# Boolean
+b = True
+```
+
+---
+
+## Control Flow
+
+```python
+# if/elif/else
+if age >= 18:
+    print("adult")
+elif age >= 13:
+    print("teenager")
+else:
+    print("child")
+
+# for loop
+for i in range(5):
+    print(i)
+
+# while loop
+while condition:
+    do_something()
+
+# List comprehension
+squares = [x**2 for x in range(10)]
+evens = [x for x in range(10) if x % 2 == 0]
+
+# Dict comprehension
+word_lengths = {w: len(w) for w in ["hello", "world"]}
+```
+
+---
+
+## Functions
+
+```python
+# Default arguments
+def greet(name="World"):
+    return f"Hello, {name}!"
+
+# *args and **kwargs
+def flexible(*args, **kwargs):
+    print(args)   # tuple of positional args
+    print(kwargs) # dict of keyword args
+
+# Lambda
+square = lambda x: x ** 2
+
+# Map/filter
+nums = [1, 2, 3, 4]
+squared = list(map(lambda x: x**2, nums))
+evens = list(filter(lambda x: x % 2 == 0, nums))
+```
+
+---
+
+## The Zen of Python
+
+```python
+import this
+```
+
+> "Beautiful is better than ugly. Explicit is better than implicit. Simple is better than complex."
+
+---
+
+## Interview Summary
+
+- Python is dynamically typed with optional type hints
+- Significant whitespace replaces braces for blocks
+- List/dict/set comprehensions are idiomatic and preferred
+- `*args` for variable positional args, `**kwargs` for keyword args
+- Everything is an object — functions are first-class citizens

@@ -1,0 +1,158 @@
+---
+title: "Python Data Structures"
+description: "Lists, tuples, dictionaries, sets, and their time complexities."
+---
+
+# Python Data Structures
+
+Understanding Python's built-in data structures and their performance characteristics is essential for writing efficient code.
+
+---
+
+## Lists
+
+Ordered, mutable sequences:
+
+```python
+lst = [1, 2, 3, 4, 5]
+
+# Operations
+lst.append(6)          # O(1)
+lst.insert(0, 0)       # O(n)
+lst.pop()              # O(1)
+lst.remove(3)          # O(n)
+lst[0]                 # O(1)
+3 in lst               # O(n)
+lst.sort()             # O(n log n)
+```
+
+### Slicing
+
+```python
+lst[1:3]     # [2, 3] — index 1 to 2
+lst[:2]      # [1, 2] — first 2
+lst[-2:]     # [4, 5] — last 2
+lst[::2]     # [1, 3, 5] — every other
+lst[::-1]    # [5, 4, 3, 2, 1] — reversed
+```
+
+---
+
+## Tuples
+
+Ordered, immutable sequences:
+
+```python
+tup = (1, 2, 3)
+
+# Unpacking
+x, y, z = tup
+first, *rest = (1, 2, 3, 4)  # first=1, rest=[2,3,4]
+
+# Named tuples
+from collections import namedtuple
+Point = namedtuple("Point", ["x", "y"])
+p = Point(1, 2)
+print(p.x, p.y)
+```
+
+> **Why tuples?** Faster than lists, hashable (can be dict keys), signal immutability.
+
+---
+
+## Dictionaries
+
+Key-value mappings:
+
+```python
+d = {"name": "Alice", "age": 30}
+
+# Operations — all O(1) average
+d["name"]               # get value
+d["email"] = "a@b.com"  # add/update
+del d["age"]            # delete
+"name" in d             # membership check
+
+# Safe access
+d.get("missing", "default")
+
+# Iteration
+for key, value in d.items():
+    print(key, value)
+
+# Dict comprehension
+squares = {x: x**2 for x in range(5)}
+```
+
+### Dictionary Performance
+
+| Operation | Average | Worst |
+|-----------|---------|-------|
+| Lookup | O(1) | O(n) |
+| Insert | O(1) | O(n) |
+| Delete | O(1) | O(n) |
+| Iterate | O(n) | O(n) |
+
+---
+
+## Sets
+
+Unordered collections of unique elements:
+
+```python
+s = {1, 2, 3, 4, 5}
+
+# Operations — all O(1) average
+s.add(6)        # add element
+s.remove(3)     # remove (raises KeyError)
+s.discard(99)   # remove if exists (no error)
+
+# Set operations
+a = {1, 2, 3}
+b = {3, 4, 5}
+a | b   # union:        {1, 2, 3, 4, 5}
+a & b   # intersection: {3}
+a - b   # difference:   {1, 2}
+a ^ b   # symmetric:    {1, 2, 4, 5}
+
+# Membership — O(1)
+3 in s  # True
+```
+
+---
+
+## Performance Comparison
+
+| Operation | List | Dict | Set |
+|-----------|------|------|-----|
+| Access by index | O(1) | N/A | N/A |
+| Access by key | N/A | O(1) | N/A |
+| Membership test | O(n) | O(1) | O(1) |
+| Insert | O(1) | O(1) | O(1) |
+| Delete | O(n) | O(1) | O(1) |
+
+> **Interview Tip:** Use `set` for O(1) membership tests instead of `list`. Use `dict` for key-value lookups.
+
+---
+
+## When to Use What
+
+| Need | Use |
+|------|-----|
+| Ordered collection | `list` |
+| Immutable ordered | `tuple` |
+| Key-value mapping | `dict` |
+| Unique elements | `set` |
+| Fast membership check | `set` |
+| Immutable dict key | `tuple` (hashable) |
+| Named record | `dataclass` or `namedtuple` |
+
+---
+
+## Interview Summary
+
+- Lists are mutable arrays — O(1) access, O(n) insert/delete at middle
+- Tuples are immutable — faster, hashable, used for fixed collections
+- Dicts are hash maps — O(1) average lookup/insert/delete
+- Sets are hash sets — O(1) membership test, great for deduplication
+- Know time complexities for common operations — frequent interview topic

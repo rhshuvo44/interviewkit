@@ -1,0 +1,169 @@
+---
+title: "Decorators and Generators"
+description: "Function decorators, class decorators, generator functions, and yield patterns."
+---
+
+# Decorators and Generators
+
+Two of Python's most powerful features — decorators modify functions, generators produce lazy sequences.
+
+---
+
+## Function Decorators
+
+A decorator wraps a function to extend its behavior:
+
+```python
+import functools
+
+def timer(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        import time
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} took {time.time() - start:.2f}s")
+        return result
+    return wrapper
+
+@timer
+def slow_function():
+    import time
+    time.sleep(1)
+    return "done"
+```
+
+### Decorators with Arguments
+
+```python
+def retry(max_attempts=3):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    if attempt == max_attempts - 1:
+                        raise
+                    print(f"Retry {attempt + 1}/{max_attempts}")
+        return wrapper
+    return decorator
+
+@retry(max_attempts=5)
+def unstable_api_call():
+    ...
+```
+
+---
+
+## Class Decorators
+
+```python
+def singleton(cls):
+    instances = {}
+    def get_instance(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return get_instance
+
+@singleton
+class Database:
+    def __init__(self):
+        self.connection = "connected"
+```
+
+---
+
+## Generators
+
+Generators produce values lazily using `yield`:
+
+```python
+def countdown(n):
+    while n > 0:
+        yield n
+        n -= 1
+
+for num in countdown(5):
+    print(num)  # 5, 4, 3, 2, 1
+
+# Generators are iterators
+gen = countdown(3)
+next(gen)  # 3
+next(gen)  # 2
+next(gen)  # 1
+# next(gen) raises StopIteration
+```
+
+### Generator Expressions
+
+```python
+# List comprehension (creates full list in memory)
+squares_list = [x**2 for x in range(1000000)]
+
+# Generator expression (lazy, one at a time)
+squares_gen = (x**2 for x in range(1000000))
+
+# Memory efficient
+import sys
+print(sys.getsizeof(squares_list))  # ~8 MB
+print(sys.getsizeof(squares_gen))   # ~200 bytes
+```
+
+---
+
+## Practical Patterns
+
+### Pipeline with Generators
+
+```python
+def read_large_file(path):
+    with open(path) as f:
+        for line in f:
+            yield line.strip()
+
+def filter_comments(lines):
+    for line in lines:
+        if not line.startswith("#"):
+            yield line
+
+def parse_csv(lines):
+    for line in lines:
+        yield line.split(",")
+
+# Lazy pipeline — processes line by line
+lines = read_large_file("data.csv")
+comments_removed = filter_comments(lines)
+parsed = parse_csv(comments_removed)
+```
+
+### Caching Decorator
+
+```python
+def memoize(func):
+    cache = {}
+    @functools.wraps(func)
+    def wrapper(*args):
+        if args not in cache:
+            cache[args] = func(*args)
+        return cache[args]
+    return wrapper
+
+@memoize
+def fibonacci(n):
+    if n < 2:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+```
+
+---
+
+## Interview Summary
+
+- Decorators modify functions using `@decorator` syntax — always use `@functools.wraps`
+- Generators use `yield` to produce values lazily — memory efficient
+- Generator expressions `(x for x in range(n))` vs list comprehensions `[x for x in range(n)]`
+- Decorators are higher-order functions that wrap and extend behavior
+- Generators implement the iterator protocol (`__iter__`, `__next__`)
