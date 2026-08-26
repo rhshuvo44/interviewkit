@@ -12,7 +12,8 @@ export type TopicSlug =
   | "sql"
   | "postgresql"
   | "nestjs"
-  | "devops";
+  | "devops"
+  | "golang";
 
 export interface TopicMeta {
   slug: TopicSlug;
@@ -121,12 +122,20 @@ export const topics: TopicMeta[] = [
     icon: "container",
     category: "DevOps & Infrastructure",
   },
+  {
+    slug: "golang",
+    title: "Golang",
+    description: "Concurrency, Goroutines, channels, and systems programming.",
+    icon: "terminal",
+    category: "Programming Languages",
+  },
 ];
 
 export const homepageTopics: TopicSlug[] = [
   "javascript",
   "typescript",
   "python",
+  "golang",
   "next",
   "react",
   "nodejs",

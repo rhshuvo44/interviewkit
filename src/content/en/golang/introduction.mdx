@@ -1,0 +1,147 @@
+---
+title: "Introduction to Golang"
+description: "Go language fundamentals, syntax, types, and the Go toolchain."
+---
+
+# Introduction to Golang
+
+Go (Golang) is a statically typed, compiled language designed at Google. It's known for simplicity, fast compilation, and built-in concurrency.
+
+---
+
+## Why Go?
+
+- **Simple syntax:** No classes, no inheritance, no exceptions
+- **Fast compilation:** Compiled to native binaries in seconds
+- **Built-in concurrency:** Goroutines and channels are first-class
+- **Garbage collected:** No manual memory management
+- **Standard library:** Powerful `net/http`, `encoding/json`, `os` packages out of the box
+
+---
+
+## Basic Syntax
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+    // Variables
+    var name string = "Alice"
+    age := 30 // short declaration
+
+    // Constants
+    const Pi = 3.14159
+
+    // Print
+    fmt.Printf("Name: %s, Age: %d\n", name, age)
+}
+```
+
+---
+
+## Types
+
+```go
+// Primitive types
+var (
+    b bool    = true
+    i int     = 42
+    f float64 = 3.14
+    s string  = "hello"
+)
+
+// Arrays & Slices
+arr := [3]int{1, 2, 3}
+slice := []int{1, 2, 3, 4, 5}
+
+// Maps
+m := map[string]int{
+    "alice": 30,
+    "bob":   25,
+}
+
+// Structs
+type User struct {
+    Name string
+    Age  int
+}
+```
+
+---
+
+## Control Flow
+
+```go
+// if/else
+if age >= 18 {
+    fmt.Println("adult")
+} else {
+    fmt.Println("minor")
+}
+
+// for loop (no while or do-while)
+for i := 0; i < 5; i++ {
+    fmt.Println(i)
+}
+
+// range
+for index, value := range slice {
+    fmt.Printf("%d: %d\n", index, value)
+}
+
+// switch
+switch day {
+case "Monday":
+    fmt.Println("Start of week")
+default:
+    fmt.Println("Other day")
+}
+```
+
+---
+
+## Error Handling
+
+Go uses explicit error returns instead of exceptions:
+
+```go
+result, err := divide(10, 0)
+if err != nil {
+    fmt.Println("Error:", err)
+    return
+}
+fmt.Println("Result:", result)
+
+func divide(a, b float64) (float64, error) {
+    if b == 0 {
+        return 0, fmt.Errorf("division by zero")
+    }
+    return a / b, nil
+}
+```
+
+> **Interview Tip:** Always check `err != nil`. It's the most common Go interview feedback.
+
+---
+
+## Go Toolchain
+
+```bash
+go run main.go        # Run immediately
+go build -o app       # Compile binary
+go test ./...         # Run tests
+go fmt ./...          # Format code
+go mod tidy           # Clean dependencies
+```
+
+---
+
+## Interview Summary
+
+- Go is statically typed with type inference (`:=`)
+- No classes — use structs + methods instead
+- Error handling is explicit with `error` return values
+- `defer` runs when the surrounding function returns
+- Go modules manage dependencies (`go.mod`)

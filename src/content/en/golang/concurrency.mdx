@@ -1,0 +1,186 @@
+---
+title: "Goroutines and Channels"
+description: "Go's concurrency model with goroutines, channels, select, and sync primitives."
+---
+
+# Goroutines and Channels
+
+Go's concurrency model is built on goroutines and channels — a powerful alternative to threads and locks.
+
+---
+
+## Goroutines
+
+A goroutine is a lightweight thread managed by the Go runtime:
+
+```go
+package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func main() {
+    go sayHello("world") // starts concurrently
+    time.Sleep(time.Second)
+}
+
+func sayHello(name string) {
+    fmt.Printf("Hello, %s!\n", name)
+}
+```
+
+> **Key Insight:** Goroutines start with just 2KB of stack (vs 1MB for OS threads) and can scale to millions.
+
+---
+
+## Channels
+
+Channels are typed conduits for sending values between goroutines:
+
+```go
+ch := make(chan int) // unbuffered channel
+
+go func() {
+    ch <- 42 // send
+}()
+
+value := <-ch // receive
+fmt.Println(value) // 42
+```
+
+### Buffered Channels
+
+```go
+ch := make(chan string, 2) // buffer of 2
+ch <- "hello"
+ch <- "world"
+// ch <- "overflow" // blocks until a value is received
+
+fmt.Println(<-ch) // "hello"
+fmt.Println(<-ch) // "world"
+```
+
+---
+
+## Channel Patterns
+
+### Fan-out / Fan-in
+
+```go
+func fanOut(jobs <-chan Job, results chan<- Result, workers int) {
+    var wg sync.WaitGroup
+    for i := 0; i < workers; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            for job := range jobs {
+                results <- process(job)
+            }
+        }()
+    }
+    go func() {
+        wg.Wait()
+        close(results)
+    }()
+}
+```
+
+### Pipeline Pattern
+
+```go
+func generate(nums ...int) <-chan int {
+    out := make(chan int)
+    go func() {
+        for _, n := range nums {
+            out <- n
+        }
+        close(out)
+    }()
+    return out
+}
+
+func square(in <-chan int) <-chan int {
+    out := make(chan int)
+    go func() {
+        for n := range in {
+            out <- n * n
+        }
+        close(out)
+    }()
+    return out
+}
+
+// Usage
+for v := range square(generate(2, 3, 4)) {
+    fmt.Println(v) // 4, 9, 16
+}
+```
+
+---
+
+## Select Statement
+
+`select` lets a goroutine wait on multiple channel operations:
+
+```go
+select {
+case msg := <-ch1:
+    fmt.Println("Received from ch1:", msg)
+case msg := <-ch2:
+    fmt.Println("Received from ch2:", msg)
+case ch3 <- 42:
+    fmt.Println("Sent to ch3")
+default:
+    fmt.Println("No communication")
+}
+```
+
+---
+
+## Sync Primitives
+
+```go
+// Mutex
+var mu sync.Mutex
+var counter int
+
+func increment() {
+    mu.Lock()
+    defer mu.Unlock()
+    counter++
+}
+
+// WaitGroup
+var wg sync.WaitGroup
+for i := 0; i < 10; i++ {
+    wg.Add(1)
+    go func() {
+        defer wg.Done()
+        doWork(i)
+    }()
+}
+wg.Wait()
+```
+
+---
+
+## Common Concurrency Pitfalls
+
+| Pitfall | Solution |
+|---------|----------|
+| Goroutine leak | Always close channels or use `context` |
+| Data race | Use `go run -race` to detect |
+| Deadlock | Ensure all goroutines can complete |
+| Unbuffered channel block | Use buffered channels or ensure sender/receiver |
+
+---
+
+## Interview Summary
+
+- Goroutines are lightweight concurrent functions (2KB stack)
+- Channels send/receive values between goroutines (`<-`)
+- `select` multiplexes multiple channel operations
+- Use `sync.Mutex` for shared state, `sync.WaitGroup` for coordination
+- Always run with `-race` flag to catch data races

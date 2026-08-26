@@ -14,6 +14,7 @@ import {
   Table,
   Brain,
   Container,
+  Terminal,
 } from "lucide-react";
 import { homepageTopics, getTopicBySlug } from "@/lib/topics";
 
@@ -31,6 +32,7 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   table: Table,
   brain: Brain,
   container: Container,
+  terminal: Terminal,
 };
 
 export function TopicCardGrid({ locale }: { locale: string }) {

@@ -209,6 +209,34 @@ export const contentData: Record<string, TopicContent> = {
       },
     ],
   },
+  golang: {
+    slug: "golang",
+    title: "Golang",
+    description:
+      "Concurrency, Goroutines, channels, and systems programming.",
+    overview:
+      "Welcome to the Golang interview kit. Learn Go's concurrency primitives, memory model, and systems-level programming patterns.",
+    subtopics: [
+      {
+        slug: "introduction",
+        title: "Introduction to Golang",
+        description:
+          "Go language fundamentals, syntax, types, and the Go toolchain.",
+      },
+      {
+        slug: "concurrency",
+        title: "Goroutines and Channels",
+        description:
+          "Go's concurrency model with goroutines, channels, select, and sync primitives.",
+      },
+      {
+        slug: "structs-interfaces",
+        title: "Structs and Interfaces",
+        description:
+          "Go's approach to OOP with structs, methods, and implicit interface satisfaction.",
+      },
+    ],
+  },
 };
 
 export function getTopicContent(topicSlug: string): TopicContent | undefined {

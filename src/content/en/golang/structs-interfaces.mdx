@@ -1,0 +1,167 @@
+---
+title: "Structs and Interfaces"
+description: "Go's approach to OOP with structs, methods, and implicit interface satisfaction."
+---
+
+# Structs and Interfaces
+
+Go takes a unique approach to object-oriented programming — no classes, no inheritance, just composition and implicit interfaces.
+
+---
+
+## Structs
+
+Structs are collections of named fields:
+
+```go
+type User struct {
+    Name  string
+    Email string
+    Age   int
+}
+
+// Create instances
+u1 := User{Name: "Alice", Email: "alice@example.com", Age: 30}
+u2 := new(User) // returns *User (pointer)
+
+// Field access
+u1.Name = "Bob"
+fmt.Println(u2.Name) // zero value: ""
+```
+
+### Struct Embedding (Composition)
+
+```go
+type Address struct {
+    Street string
+    City   string
+}
+
+type User struct {
+    Name    string
+    Address // embedded — fields promoted
+}
+
+u := User{
+    Name:    "Alice",
+    Address: Address{Street: "123 Main St", City: "NYC"},
+}
+
+fmt.Println(u.Street) // promoted from Address
+fmt.Println(u.City)   // promoted from Address
+```
+
+> **Interview Tip:** Go uses composition over inheritance. Embedding promotes methods and fields.
+
+---
+
+## Methods
+
+Methods are functions with a receiver:
+
+```go
+func (u User) Greet() string {
+    return "Hello, " + u.Name
+}
+
+// Pointer receiver — can modify the struct
+func (u *User) SetName(name string) {
+    u.Name = name
+}
+
+// Usage
+u := User{Name: "Alice"}
+fmt.Println(u.Greet())   // "Hello, Alice"
+u.SetName("Bob")
+fmt.Println(u.Name)      // "Bob"
+```
+
+### Value vs Pointer Receiver
+
+```go
+// Value receiver — works on a copy
+func (u User) GetAge() int { return u.Age }
+
+// Pointer receiver — works on original
+func (u *User) Birthday() { u.Age++ }
+```
+
+> **Rule of thumb:** Use pointer receivers when the method modifies the receiver or is expensive to copy.
+
+---
+
+## Interfaces
+
+Interfaces are satisfied implicitly — no `implements` keyword needed:
+
+```go
+type Writer interface {
+    Write(p []byte) (n int, err error)
+}
+
+// *os.File satisfies Writer (has Write method)
+// *bytes.Buffer satisfies Writer (has Write method)
+// Any type with Write([]byte)(int, error) satisfies Writer
+```
+
+### Interfaces in Practice
+
+```go
+func processData(r io.Reader) error {
+    data, err := io.ReadAll(r)
+    if err != nil {
+        return err
+    }
+    fmt.Println(string(data))
+    return nil
+}
+
+// Works with any io.Reader
+processData(os.Stdin)
+processData(strings.NewReader("hello"))
+processData(bytes.NewBufferString("world"))
+```
+
+### Empty Interface
+
+```go
+func printAny(v interface{}) {
+    fmt.Printf("%v\n", v)
+}
+
+// In modern Go (1.18+), use 'any':
+func printAny(v any) {
+    fmt.Printf("%v\n", v)
+}
+```
+
+---
+
+## Error Handling with Interfaces
+
+```go
+type NotFoundError struct {
+    Resource string
+    ID       int
+}
+
+func (e *NotFoundError) Error() string {
+    return fmt.Sprintf("%s with ID %d not found", e.Resource, e.ID)
+}
+
+// Check error type
+var notFound *NotFoundError
+if errors.As(err, &notFound) {
+    fmt.Println(notFound.Resource)
+}
+```
+
+---
+
+## Interview Summary
+
+- Structs replace classes — compose via embedding, not inheritance
+- Methods have receivers: value (`func (u User)`) or pointer (`func (u *User)`)
+- Interfaces are satisfied implicitly — any type with the right methods works
+- Use `io.Reader`/`io.Writer` as examples of interface-based design
+- Prefer small interfaces — the smaller the interface, the more reusable
