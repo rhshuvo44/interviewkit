@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { Sidebar } from "@/components/Sidebar";
 import { ArticleNav } from "@/components/ArticleNav";
 import { QuizSection } from "@/components/QuizSection";
@@ -205,7 +204,6 @@ export default async function ArticlePage({
           </div>
         </main>
       </div>
-      <Footer t={t} />
     </div>
   );
 }

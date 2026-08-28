@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { Sidebar } from "@/components/Sidebar";
 import { getTopicContent, contentData } from "@/lib/content";
 import { getTopicBySlug } from "@/lib/topics";
@@ -179,7 +178,6 @@ export default async function TopicPage({
           </div>
         </main>
       </div>
-      <Footer t={t} />
     </div>
   );
 }
