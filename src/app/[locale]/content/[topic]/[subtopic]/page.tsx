@@ -96,6 +96,11 @@ export default async function ArticlePage({
 
   const { prev, next } = getAdjacentSubtopics(topic, subtopic);
 
+  const readMinutes = Math.max(
+    1,
+    Math.round(mdxContent.replace(/```[\s\S]*?```/g, "").split(/\s+/).length / 200)
+  );
+
   const headings = mdxContent
     .split("\n")
     .filter((line) => line.startsWith("## "))
@@ -133,6 +138,15 @@ export default async function ArticlePage({
                     </h1>
                     <p className="mt-6 text-xl text-muted-foreground leading-relaxed">
                       {subtopicData.description}
+                    </p>
+                    <p className="mt-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      {locale === "bn"
+                        ? `~${readMinutes} মিনিট পড়া`
+                        : `~${readMinutes} min read`}
                     </p>
                   </div>
                 </div>
