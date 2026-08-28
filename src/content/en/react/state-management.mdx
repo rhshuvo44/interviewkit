@@ -1,0 +1,158 @@
+---
+title: "State Management and Context"
+description: "Props drilling, Context API, and external state libraries."
+---
+
+# State Management and Context
+
+Managing shared state across components is a core React challenge. Learn the escalation path from props to Context to global stores.
+
+---
+
+## Props Drilling
+
+Passing state down through multiple layers:
+
+```jsx
+// Problem: Threading theme through 3 levels
+function App() {
+  const theme = "dark";
+  return <Toolbar theme={theme} />;
+}
+
+function Toolbar({ theme }) {
+  return <Button theme={theme} />; // theme passed just to forward it
+}
+
+function Button({ theme }) {
+  return <button className={theme}>Click</button>;
+}
+```
+
+- Works for 1-2 levels, but becomes messy deeper
+- **Props drilling** = passing props through components that don't use them
+
+---
+
+## Context API
+
+Provides state to the whole subtree without prop threading:
+
+```jsx
+// 1. Create context
+const ThemeContext = createContext("light");
+
+// 2. Provider wraps the tree
+function App() {
+  return (
+    <ThemeContext.Provider value="dark">
+      <Button />
+    </ThemeContext.Provider>
+  );
+}
+
+// 3. Consumption with hook
+function Button() {
+  const theme = useContext(ThemeContext);
+  return <button className={theme}>Click</button>;
+}
+```
+
+---
+
+## Context + useReducer Pattern
+
+The preferred pattern for medium-sized state:
+
+```jsx
+// reducer.js
+function reducer(state, action) {
+  switch (action.type) {
+    case "add":
+      return { ...state, count: state.count + 1 };
+    case "reset":
+      return { ...state, count: 0 };
+    default:
+      return state;
+  }
+}
+
+// store.jsx
+const CounterContext = createContext();
+
+export function CounterProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
+  return (
+    <CounterContext.Provider value={{ state, dispatch }}>
+      {children}
+    </CounterContext.Provider>
+  );
+}
+
+// Usage in any nested component
+function Counter() {
+  const { state, dispatch } = useContext(CounterContext);
+  return (
+    <>
+      <p>Count: {state.count}</p>
+      <button onClick={() => dispatch({ type: "add" })}>Add</button>
+    </>
+  );
+}
+```
+
+---
+
+## External State Libraries
+
+### When Context isn't enough
+
+Context has a **performance issue**: any value change re-renders ALL consumers.
+
+| Library | Use case |
+|---------|----------|
+| **Redux** | Large apps, predictable global state, devtools |
+| **Zustand** | Tiny, fast, minimal boilerplate global state |
+| **Jotai** | Fine-grained, atomic state (React-like) |
+| **React Query** | Server-state (data fetching, caching) |
+
+### Redux Example
+
+```jsx
+import { createSlice, configureStore } from "@reduxjs/toolkit";
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) => { state.value += 1; },
+  },
+});
+
+export const { increment } = counterSlice.actions;
+export const store = configureStore({ reducer: counterSlice.reducer });
+```
+
+---
+
+## Choosing a State Management Approach
+
+| Scale | Approach |
+|-------|----------|
+| Local state | `useState`/`useRef` |
+| Lift state up | Pass state + setter to children |
+| Shared across a subtree | Context API |
+| Complex shared logic | Context + `useReducer` |
+| Global, complex, high-frequency | Redux/Zustand/Jotai |
+| Server data/caching | React Query/SWR |
+
+---
+
+## Interview Summary
+
+- Props drilling works for shallow trees; Context eliminates it
+- `createContext` + `.Provider` + `useContext` = share state across subtree
+- Context + `useReducer` is the standard pattern for complex shared state
+- Context re-renders all consumers on any change — be mindful of performance
+- External libraries (Redux, Zustand) for large/global state; React Query for server state
+- Keep state as local as possible — don't globalize what doesn't need to be

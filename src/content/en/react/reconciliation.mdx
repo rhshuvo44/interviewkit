@@ -1,0 +1,168 @@
+---
+title: "Reconciliation and Performance"
+description: "Keys, memoization, and React's diffing algorithm."
+---
+
+# Reconciliation and Performance
+
+React's reconciliation algorithm efficiently updates the DOM. Understanding it helps you write performant components.
+
+---
+
+## What is Reconciliation?
+
+When state or props change, React:
+1. Builds a new virtual DOM tree
+2. **Diffs** it against the previous tree
+3. Computes the **minimal set of DOM operations**
+4. Applies them efficiently
+
+---
+
+## The Diffing Algorithm
+
+React's optimizations (O(n) instead of O(n³)):
+
+1. **Different element types?** → Teardown old tree, build new
+2. **Same element type?** → Update the existing component/DOM node
+3. **Keys** → Track which list items changed/moved
+
+```jsx
+// Different type → full remount
+<div />  →  <span />   // teardown div, create span
+
+// Same type → update in place
+<div className="a" />  →  <div className="b" />  // just update className
+```
+
+---
+
+## Keys in Lists
+
+Keys help React match items across renders:
+
+```jsx
+// ✅ Use stable unique keys (IDs)
+{items.map((item) => (
+  <li key={item.id}>{item.name}</li>
+))}
+
+// ❌ Avoid index keys — cause bugs with reordering
+{items.map((item, index) => (
+  <li key={index}>{item.name}</li>
+))}
+```
+
+> **What keys do:** If `key` changes, React remounts the component (fresh state); if it's stable, React updates in place. Wrong keys → wrong order or lost state.
+
+---
+
+## React.memo
+
+Prevents re-render when props haven't changed:
+
+```jsx
+import { memo } from "react";
+
+const ExpensiveChild = memo(function ExpensiveChild({ data }) {
+  // Only re-renders when `data` reference changes
+  return <ExpensiveChart data={data} />;
+});
+```
+
+> **Remember:** `memo` is shallow — it compares props by reference. Objects/arrays created inline will break memoization.
+
+---
+
+## The Memoization Chain
+
+```jsx
+const ExpensiveChild = memo(({ onSelect, list }) => (
+  <ul>
+    {list.map((item) => (
+      <li key={item.id} onClick={() => onSelect(item)}>{item.name}</li>
+    ))}
+  </ul>
+));
+
+function Parent() {
+  const [query, setQuery] = useState("");
+
+  // useCallback: stable function reference
+  const handleSelect = useCallback((item) => {
+    console.log(item.id);
+  }, []);
+
+  // useMemo: stable array reference
+  const filtered = useMemo(
+    () => items.filter((i) => i.name.includes(query)),
+    [query]
+  );
+
+  return <ExpensiveChild onSelect={handleSelect} list={filtered} />;
+}
+```
+
+---
+
+## React Compiler (Automatic Memoization)
+
+React 19 introduces the React Compiler which **auto-memoizes** your components:
+
+```bash
+npx react-compiler-runtime
+```
+
+- No manual `useMemo`/`useCallback`/`memo` needed
+- The compiler analyzes and optimizes automatically
+- Combined with React 19 for zero-effort performance
+
+---
+
+## Common Performance Pitfalls
+
+| Pitfall | Fix |
+|---------|-----|
+| New object/array each render | `useMemo` to stabilize |
+| Inline arrow functions | `useCallback` |
+| Re-rendering large subtrees | Component composition, `memo` |
+| Expensive code in render | Move to `useMemo` or `useEffect` |
+| Index keys with reorder | Use stable unique keys |
+| Unnecessary context consumers | Split contexts by concern |
+
+---
+
+## Rendering Optimization
+
+```jsx
+// Move state down — only re-render what needs to
+function App() {
+  return (
+    <>
+      <ExpensiveSidebar />   {/* Won't re-render */}
+      <Counter />             {/* State local here */}
+    </>
+  );
+}
+
+// Component composition — children prop doesn't re-render parent
+function App() {
+  return (
+    <Layout>
+      <SlowComponent />
+    </Layout>
+  );
+}
+```
+
+---
+
+## Interview Summary
+
+- Reconciliation diffs virtual trees → minimal DOM updates
+- Different element types remount; same types update in place
+- Use **stable unique keys** to track list items
+- `React.memo` prevents re-renders when props are unchanged
+- Combine `memo` + `useMemo` + `useCallback` for effective memoization
+- React Compiler in React 19 automates memoization
+- Move state down and use composition to limit re-renders

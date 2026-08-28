@@ -1,0 +1,180 @@
+---
+title: "Hooks Deep Dive"
+description: "useState, useEffect, useMemo, useCallback, and custom hooks."
+---
+
+# Hooks Deep Dive
+
+Hooks let function components use state and lifecycle features. They're the backbone of modern React.
+
+---
+
+## Rules of Hooks
+
+1. **Only call hooks at the top level** — never inside loops, conditions, or nested functions
+2. **Only call hooks from React functions** — components or custom hooks
+
+```jsx
+// ✅ Correct
+function Component() {
+  const [state, setState] = useState(0);
+  return <div>{state}</div>;
+}
+
+// ❌ Wrong — hook inside condition
+function Bad({ show }) {
+  if (show) {
+    const [state, setState] = useState(0);
+  }
+  return null;
+}
+```
+
+---
+
+## useState
+
+```jsx
+const [count, setCount] = useState(0);
+
+setCount(count + 1);        // Function with value
+setCount((prev) => prev + 1); // Function with updater (safer with batching)
+
+// Lazy initialization (expensive computation)
+const [state, setState] = useState(() => expensiveInit());
+```
+
+> **Updater form** `setCount(prev => ...)` is essential when updates depend on previous state, especially in React 18+ automatic batching.
+
+---
+
+## useEffect
+
+Runs side effects after render:
+
+```jsx
+useEffect(() => {
+  // Runs after every render (no deps array)
+  document.title = `You clicked ${count} times`;
+}, [count]); // Runs only when count changes
+
+// With cleanup
+useEffect(() => {
+  const timer = setInterval(() => {
+    console.log("tick");
+  }, 1000);
+
+  return () => clearInterval(timer); // Cleanup on unmount/deps change
+}, []);
+```
+
+### Dependency Array Patterns
+
+| Deps Array | When it runs |
+|------------|-------------|
+| (none) | After every render |
+| `[]` | Only after first mount |
+| `[a, b]` | After mount + when a or b change |
+
+---
+
+## useMemo
+
+Memoizes a calculated value:
+
+```jsx
+const expensiveResult = useMemo(() => {
+  return computeExpensiveValue(a, b);
+}, [a, b]); // Recalculate only when a or b change
+```
+
+> **Use for:** expensive calculations on renders. Not for cheap operations or effect dependencies.
+
+---
+
+## useCallback
+
+Memoizes a function reference:
+
+```jsx
+const handleClick = useCallback(() => {
+  setCount((c) => c + 1);
+}, []); // Stable reference — good for child components using React.memo
+```
+
+---
+
+## useRef
+
+Holds a mutable value that persists across renders without causing re-renders:
+
+```jsx
+const inputRef = useRef(null);
+const countRef = useRef(0);
+
+// Access DOM element
+inputRef.current?.focus();
+
+// Track value without re-render
+countRef.current++;
+```
+
+---
+
+## Custom Hooks
+
+Extract reusable logic:
+
+```jsx
+function useLocalStorage(key, initialValue) {
+  const [value, setValue] = useState(() => {
+    return JSON.parse(localStorage.getItem(key)) || initialValue;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue];
+}
+
+// Usage
+const [name, setName] = useLocalStorage("name", "");
+```
+
+### useDebounce Custom Hook
+
+```jsx
+function useDebounce(value, delay = 300) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}
+```
+
+---
+
+## useMemo vs useCallback vs useRef
+
+| Hook | Purpose | Re-renders? |
+|------|---------|-------------|
+| `useMemo` | Cache computed value | No (recomputes on deps) |
+| `useCallback` | Cache function reference | No (recreates on deps) |
+| `useRef` | Mutable persistent value | No (never) |
+| `useState` | Mutable state | Yes |
+
+---
+
+## Interview Summary
+
+- Follow the rules: top-level, React functions only
+- `useState` — state; use updater form for dependent updates
+- `useEffect` — side effects; understand the dependency array
+- `useMemo`/`useCallback` — optimize expensive computations and stable references
+- `useRef` — mutable values without re-render
+- Custom hooks = reusable logic with the `use` prefix

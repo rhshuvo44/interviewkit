@@ -293,6 +293,40 @@ export const contentData: Record<string, TopicContent> = {
       },
     ],
   },
+  react: {
+    slug: "react",
+    title: "React",
+    description:
+      "Hooks, Context, reconciliation, and performance.",
+    overview:
+      "Welcome to the React interview kit. Master React's component model, hooks, state management, and performance optimization.",
+    subtopics: [
+      {
+        slug: "introduction",
+        title: "Introduction to React",
+        description:
+          "React fundamentals, JSX, components, props, and the virtual DOM.",
+      },
+      {
+        slug: "hooks",
+        title: "Hooks Deep Dive",
+        description:
+          "useState, useEffect, useMemo, useCallback, and custom hooks.",
+      },
+      {
+        slug: "state-management",
+        title: "State Management and Context",
+        description:
+          "Props drilling, Context API, and external state libraries.",
+      },
+      {
+        slug: "reconciliation",
+        title: "Reconciliation and Performance",
+        description:
+          "Keys, memoization, and React's diffing algorithm.",
+      },
+    ],
+  },
 };
 
 export function getTopicContent(topicSlug: string): TopicContent | undefined {
