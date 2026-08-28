@@ -1,0 +1,116 @@
+---
+title: "Introduction to Next.js"
+description: "Next.js fundamentals, file-based routing, and the App Router."
+---
+
+# Introduction to Next.js
+
+Next.js is the React framework for production. It provides file-based routing, server-side rendering, static generation, and full-stack capabilities out of the box.
+
+---
+
+## What is Next.js?
+
+Next.js is a **React-based framework** that adds:
+- **File-based routing** (instead of manual React Router setup)
+- **Server-side rendering** and **static site generation**
+- **API routes** for building backends
+- **Automatic code splitting** and **image optimization**
+- **Built-in CSS and TypeScript support**
+
+---
+
+## File-based Routing (App Router)
+
+In the App Router, each folder inside `app/` becomes a route:
+
+```text
+app/
+├── layout.tsx          # Root layout (wraps all pages)
+├── page.tsx            # Routes to /
+├── about/
+│   └── page.tsx        # Routes to /about
+├── blog/
+│   ├── page.tsx        # Routes to /blog
+│   └── [slug]/
+│       └── page.tsx    # Routes to /blog/:slug
+└── api/
+    └── hello/
+        └── route.ts    # API route at /api/hello
+```
+
+> **Interview Tip:** A `page.tsx` file defines a UI page. A `layout.tsx` file defines shared UI that persists across routes.
+
+---
+
+## Dynamic Routes
+
+```tsx
+// app/blog/[slug]/page.tsx
+export default async function BlogPost({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  return <h1>Blog post: {slug}</h1>;
+}
+```
+
+---
+
+## Link and Navigation
+
+```tsx
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+// Client-side navigation (no full page reload)
+<Link href="/about">About</Link>
+
+// Programmatic navigation
+function Button() {
+  const router = useRouter();
+  return <button onClick={() => router.push("/about")}>Go</button>;
+}
+```
+
+---
+
+## API Routes
+
+```ts
+// app/api/hello/route.ts
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  return NextResponse.json({ message: "Hello World" });
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  return NextResponse.json({ received: body });
+}
+```
+
+---
+
+## Next.js vs Plain React
+
+| Feature | Next.js | Plain React |
+|---------|---------|-------------|
+| Routing | File-based (built-in) | React Router (manual) |
+| SSR/SSG | Built-in | Requires extra setup |
+| API backend | Built-in route handlers | External server needed |
+| Image optimization | Built-in `<Image>` | Manual/third-party |
+| SEO | Built-in metadata API | Manual |
+
+---
+
+## Interview Summary
+
+- Next.js = React + file-based routing + SSR/SSG + backend
+- App Router: folders become routes, `page.tsx` and `layout.tsx` are key files
+- Dynamic segments use `[slug]` syntax
+- `Link` for client-side navigation, `useRouter` for programmatic
+- Route handlers (`route.ts`) replace the old Pages Router API routes

@@ -1,0 +1,145 @@
+---
+title: "App Router and Server Components"
+description: "Server vs Client Components, layouts, and data fetching patterns."
+---
+
+# App Router and Server Components
+
+The App Router is Next.js 13+ architecture built around React Server Components (RSC) — a paradigm shift in how we build React applications.
+
+---
+
+## Server Components vs Client Components
+
+```tsx
+// Server Component (default)
+// Runs on the server — no JS sent to browser
+export default async function ServerPage() {
+  const data = await fetchData();
+  return <div>{data.title}</div>;
+}
+
+// Client Component — needs 'use client' directive
+// Runs in the browser — can use hooks and interactivity
+"use client";
+import { useState } from "react";
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+### When to Use Which
+
+| Use Server Component When... | Use Client Component When... |
+|-----------------------------|-----------------------------|
+| Fetching data from API/DB | Using state or hooks |
+| Accessing backend/db directly | Handling user interactions |
+| Using sensitive secrets | Using browser APIs |
+| Static, non-interactive content | Adding event listeners |
+
+---
+
+## Layouts
+
+Layouts persist across navigation and preserve state:
+
+```tsx
+// app/blog/layout.tsx
+export default function BlogLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <nav>Blog navigation</nav>   {/* Shared across all blog pages */}
+      {children}                    {/* Renders the current page */}
+    </section>
+  );
+}
+```
+
+### Nested Layouts
+
+```text
+app/
+├── layout.tsx          # Root layout (html/body)
+│   └── blog/
+│       ├── layout.tsx  # Blog layout (nav + children)
+│       └── page.tsx    # /blog
+```
+
+---
+
+## Data Fetching with Server Components
+
+```tsx
+// Direct database access (no API route needed)
+import { db } from "@/lib/db";
+
+export default async function Users() {
+  const users = await db.user.findMany();
+  return <UserList users={users} />;
+}
+
+// Fetch external API
+export default async function Posts() {
+  const res = await fetch("https://api.example.com/posts", {
+    next: { revalidate: 60 }, // ISR cache for 60s
+  });
+  const posts = await res.json();
+  return <PostList posts={posts} />;
+}
+```
+
+---
+
+## Loading and Error States
+
+```tsx
+// app/blog/loading.tsx — shown while loading
+export default function Loading() {
+  return <div>Loading posts...</div>;
+}
+
+// app/blog/error.tsx — shown on error
+"use client";
+export default function Error({ reset }: { reset: () => void }) {
+  return (
+    <div>
+      <p>Something went wrong</p>
+      <button onClick={reset}>Retry</button>
+    </div>
+  );
+}
+```
+
+---
+
+## Route Groups
+
+Use `(group)` to organize routes without adding to the URL path:
+
+```text
+app/
+├── (marketing)/
+│   ├── layout.tsx      # Marketing layout (Header, Footer)
+│   ├── about/page.tsx  # /about
+│   └── pricing/page.tsx # /pricing
+└── (app)/
+    ├── layout.tsx      # App layout (Sidebar)
+    └── dashboard/page.tsx  # /dashboard
+```
+
+---
+
+## Interview Summary
+
+- Server Components run on the server — less JS in the browser
+- Add `"use client"` only when you need interactivity
+- Layouts persist state across navigation; use them for shared UI
+- Server Components can fetch data directly — no separate API route
+- Route groups `(name)` organize code without affecting URLs
+- `loading.tsx` and `error.tsx` handle async UI states

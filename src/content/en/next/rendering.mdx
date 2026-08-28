@@ -1,0 +1,132 @@
+---
+title: "Rendering Strategies"
+description: "SSR, SSG, ISR, and Client-Side Rendering trade-offs."
+---
+
+# Rendering Strategies
+
+Next.js supports multiple rendering strategies. Understanding the trade-offs is a critical interview topic.
+
+---
+
+## The Four Strategies
+
+| Strategy | When HTML is generated | When to use |
+|----------|----------------------|-------------|
+| **SSR** (Server-Side Rendering) | On every request | Dynamic, personalized data |
+| **SSG** (Static Site Generation) | At build time | Public, rarely-changing content |
+| **ISR** (Incremental Static Regeneration) | At build + on-demand | Content updated periodically |
+| **CSR** (Client-Side Rendering) | In the browser | Highly interactive, user-specific |
+
+---
+
+## SSG (Static Generation)
+
+```tsx
+// app/blog/page.tsx — static by default
+export default async function Blog() {
+  const posts = await getPosts();
+  return <PostList posts={posts} />;
+}
+```
+
+- Generated once at build time
+- Fastest: served from CDN edge
+- Good for SEO
+- Content must be static or available at build
+
+### generateStaticParams
+
+```tsx
+// app/blog/[slug]/page.tsx
+export async function generateStaticParams() {
+  const posts = await getAllPostSlugs();
+  return posts.map((post) => ({ slug: post.slug }));
+}
+```
+
+---
+
+## SSR (Server-Side Rendering)
+
+```tsx
+// app/page.tsx — force dynamic rendering
+export const dynamic = "force-dynamic";
+
+export default async function Dashboard() {
+  const user = await getCurrentUser(); // per-request
+  return <UserProfile user={user} />;
+}
+```
+
+- Rendered on every request — always fresh
+- Slower than SSG (each request hits the server)
+- Use for: personalized data, auth, real-time info
+
+---
+
+## ISR (Incremental Static Regeneration)
+
+```tsx
+// app/products/page.tsx
+export const revalidate = 3600; // revalidate every hour
+
+export default async function Products() {
+  const products = await getProducts();
+  return <ProductList products={products} />;
+}
+
+// Or with fetch
+const res = await fetch("https://api.example.com", {
+  next: { revalidate: 3600 },
+});
+```
+
+- Statically generated at build, then updated periodically
+- Takes the best of SSG (speed) and SSR (freshness)
+- `on-demand revalidation` via `revalidatePath()` or `revalidateTag()`
+
+---
+
+## CSR (Client-Side Rendering)
+
+```tsx
+"use client";
+import { useEffect, useState } from "react";
+
+export default function Analytics() {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    fetch("/api/analytics").then((r) => r.json()).then(setData);
+  }, []);
+  return data ? <Chart data={data} /> : <Loading />;
+}
+```
+
+- Fastest initial shell, then loads data in browser
+- Bad for SEO (content not in initial HTML)
+- Best for private, user-specific dashboards
+
+---
+
+## Choosing the Right Strategy
+
+```
+Is data public and static?
+  ├── Yes → SSG
+  ├── Changes periodically? → ISR
+  └── No (personalized/real-time) → SSR
+Is it behind auth or highly interactive?
+  └── Yes → CSR (on top of a static shell)
+```
+
+---
+
+## Interview Summary
+
+- **SSG**: build-time render, fastest, best SEO — static content
+- **SSR**: per-request render, always fresh — dynamic data
+- **ISR**: SSG + periodic revalidation — balance of both
+- **CSR**: browser rendering — interactive/private dashboards
+- Know when to use each and the trade-offs (speed vs freshness vs SEO)
+- Use `export const dynamic`, `revalidate`, and fetch `next` options to control rendering

@@ -265,6 +265,34 @@ export const contentData: Record<string, TopicContent> = {
       },
     ],
   },
+  next: {
+    slug: "next",
+    title: "Next.js",
+    description:
+      "App Router, Server Components, and full-stack patterns.",
+    overview:
+      "Welcome to the Next.js interview kit. Master the React framework for production with App Router, Server Components, and performance optimization.",
+    subtopics: [
+      {
+        slug: "introduction",
+        title: "Introduction to Next.js",
+        description:
+          "Next.js fundamentals, file-based routing, and the App Router.",
+      },
+      {
+        slug: "app-router",
+        title: "App Router and Server Components",
+        description:
+          "Server vs Client Components, layouts, and data fetching patterns.",
+      },
+      {
+        slug: "rendering",
+        title: "Rendering Strategies",
+        description:
+          "SSR, SSG, ISR, and Client-Side Rendering trade-offs.",
+      },
+    ],
+  },
 };
 
 export function getTopicContent(topicSlug: string): TopicContent | undefined {
