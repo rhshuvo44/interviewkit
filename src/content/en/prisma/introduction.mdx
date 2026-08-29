@@ -1,0 +1,120 @@
+---
+title: "Introduction to Prisma"
+description: "What Prisma is, its architecture, the Prisma Client, and how it compares to other ORMs."
+---
+
+# Introduction to Prisma
+
+Prisma is a next-generation **Node.js and TypeScript ORM** that makes working with databases declarative, type-safe, and schema-driven. Instead of writing raw SQL or juggling query builders, you define your data model in a `schema.prisma` file and Prisma generates a fully typed client for you.
+
+---
+
+## What is Prisma?
+
+Prisma is a **data access layer** that sits between your application and your database. Its three core tools:
+
+| Tool | Purpose |
+|------|---------|
+| **Prisma Client** | Auto-generated, type-safe query builder |
+| **Prisma Migrate** | Database schema migrations from the Prisma schema |
+| **Prisma Studio** | A GUI to visually inspect and edit your data |
+
+> **Interview Focus:** The key differentiator is that Prisma is **schema-first** — your single source of truth is the `schema.prisma` file, and everything else is derived from it.
+
+---
+
+## Prisma Architecture
+
+Prisma is not a traditional ORM. It works through a **query engine binary**:
+
+1. Your app imports the generated `PrismaClient`.
+2. Query calls are sent to the **Prisma query engine** (a Rust-based binary).
+3. The engine translates them into SQL and talks to your database.
+4. Results are returned as type-safe, plain JavaScript/TypeScript objects.
+
+```
+Application  →  Prisma Client  →  Query Engine  →  Database
+                                  (Rust binary)
+```
+
+> **Interview Tip:** Because the query engine is a Rust binary, it runs separately from your Node process. This architecture is a frequent point of discussion in advanced interviews.
+
+---
+
+## How Prisma Compares to Other ORMs
+
+| Aspect | Prisma | TypeORM | Sequelize | Mongoose |
+|--------|--------|---------|-----------|----------|
+| Language | TypeScript-first | TypeScript | JavaScript | JavaScript |
+| Schema | `schema.prisma` (declarative) | Decorators/entities | Models (JS) | Schemas (JS) |
+| Type safety | Excellent, generated | Good | Weak | Weak |
+| Migrations | Prisma Migrate | Built-in | Synchronize | No built-in |
+| Relations | Declared in schema | Decorators | In models | Populate refs |
+
+> **Interview Focus:** Unlike TypeORM (which uses entity classes with decorators), Prisma's schema is **declarative and not tied to your app code**. This separation is a core design choice.
+
+---
+
+## The Prisma Workflow
+
+A typical Prisma workflow:
+
+1. **Define** models in `schema.prisma`.
+2. **Run** `npx prisma migrate dev` to create/apply migrations.
+3. **Generate** the type-safe client: `npx prisma generate`.
+4. **Query** your database with the typed `PrismaClient`.
+
+```bash
+npm install prisma --save-dev
+npx prisma init         # creates schema.prisma + .env
+npx prisma migrate dev  # create and apply a migration
+npx prisma generate     # generate the client
+```
+
+---
+
+## A Minimal Example
+
+```prisma
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
+```
+
+```typescript
+// Using the generated client
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const user = await prisma.user.create({
+    data: { email: "ada@example.com", name: "Ada" },
+  });
+  console.log(user); // { id: 1, email: "ada@example.com", name: "Ada" }
+}
+```
+
+> **Key Insight:** `user` is fully typed — TypeScript knows `user.id` is a `number`, `user.email` is a `string`. Typos and type mismatches are caught at compile time, not runtime.
+
+---
+
+## Interview Summary
+
+- Prisma is a **schema-first, type-safe** ORM for Node.js/TypeScript.
+- Its three parts: **Client**, **Migrate**, and **Studio**.
+- Uses a Rust-based **query engine** (not a traditional ORM).
+- The `schema.prisma` file is the **single source of truth**.
+- `prisma migrate dev` + `prisma generate` power the workflow.

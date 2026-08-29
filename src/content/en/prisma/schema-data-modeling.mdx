@@ -1,0 +1,176 @@
+---
+title: "Schema and Data Modeling"
+description: "Prisma schema syntax, models, scalar types, enums, and Prisma-specific field attributes."
+---
+
+# Schema and Data Modeling
+
+The `schema.prisma` file is the heart of Prisma. It declaratively defines your database models, and Prisma derives types, migrations, and queries from it.
+
+---
+
+## Schema Structure
+
+A Prisma schema has three required blocks:
+
+```prisma
+// 1. The client generator
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 2. The database connection (datasource)
+datasource db {
+  provider = "postgresql"   // postgresql | mysql | sqlite | sqlserver | mongodb
+  url      = env("DATABASE_URL")
+}
+
+// 3. Your models
+model User {
+  id Int @id @default(autoincrement())
+}
+```
+
+> **Interview Focus:** The `datasource` provider determines the SQL dialect and available features. You cannot change it without regenerating migrations.
+
+---
+
+## Models
+
+A **model** maps to a database table and defines its fields and relations.
+
+```prisma
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  posts     Post[]
+}
+```
+
+### Field Structure
+
+Each field has: **name**, **type**, and optional **attributes** (prefixed with `@`).
+
+- `id Int @id` — primary key
+- `email String @unique` — unique constraint
+- `name String?` — optional (nullable)
+- `role Role @default(USER)` — enum with default
+- `createdAt DateTime @default(now())` — timestamp default
+- `posts Post[]` — a list field (relation to another model)
+
+---
+
+## Scalar Types
+
+Prisma maps each scalar type to a database-specific type:
+
+| Prisma | PostgreSQL | Notes |
+|--------|-----------|-------|
+| `Int` | `INTEGER` | 32-bit integer |
+| `BigInt` | `BIGINT` | 64-bit integer |
+| `Float` | `DOUBLE PRECISION` | 64-bit float |
+| `Decimal` | `NUMERIC` | Arbitrary precision |
+| `String` | `TEXT` | Defaults to `TEXT` |
+| `Boolean` | `BOOLEAN` | |
+| `DateTime` | `TIMESTAMP(3)` | Stored as UTC |
+| `Json` | `JSONB` | Unstructured data |
+| `Bytes` | `BYTEA` | Binary data |
+
+> **Interview Tip:** `Decimal` is preferred over `Float` for money to avoid floating-point precision errors.
+
+---
+
+## Field Attributes (Common)
+
+| Attribute | Purpose |
+|-----------|---------|
+| `@id` | Primary key |
+| `@default(...)` | Default value |
+| `@unique` | Unique constraint |
+| `@relation(...)` | Defines a relation |
+| `@map("column")` | Map field to a DB column name |
+| `@updatedAt` | Auto-set on every update |
+| `@db.Timestamptz(6)` | Provider-specific type override |
+
+Example:
+
+```prisma
+model User {
+  id        Int      @id @default(autoincrement())
+  updatedAt DateTime @updatedAt
+  role      Role     @default(USER)
+}
+```
+
+---
+
+## Enums
+
+Enums are defined at the top level and referenced in models:
+
+```prisma
+enum Role {
+  USER
+  ADMIN
+  SUPERVISOR
+}
+
+model User {
+  id   Int  @id @default(autoincrement())
+  role Role @default(USER)
+}
+```
+
+> **Interview Focus:** Enum values are available as a union type in the generated client, e.g. `Role = 'USER' | 'ADMIN' | 'SUPERVISOR'`.
+
+---
+
+## Model-Level Attributes
+
+Some attributes apply to the whole model rather than a field:
+
+```prisma
+model User {
+  id Int @id @default(autoincrement())
+
+  // Composite unique constraint
+  @@unique([firstName, lastName])
+
+  // Composite index for query performance
+  @@index([email])
+
+  // Map the model to a differently-named table
+  @@map("users")
+}
+```
+
+| Model attribute | Purpose |
+|-----------------|---------|
+| `@@unique([...])` | Composite unique constraint |
+| `@@index([...])` | Composite index |
+| `@@map("table")` | Map to a DB table name |
+| `@@id([...])` | Composite primary key |
+
+---
+
+## Naming Conventions
+
+- **Model names** — PascalCase, singular (`User`, not `Users`)
+- **Field names** — camelCase (`createdAt`, not `created_at`)
+- **Enum names** — PascalCase; **values** — UPPERCASE
+
+> **Interview Tip:** Prisma is opinionated. The table name is the model name lowercased and pluralized (`User` → `users`) unless you override it with `@@map`.
+
+---
+
+## Interview Summary
+
+- The **schema** is the single source of truth for models and types.
+- Three main blocks: **generator**, **datasource**, and **models**.
+- Scalar types map to DB-specific types (`Decimal` > `Float` for money).
+- Field attributes prefix with `@`; model attributes prefix with `@@`.
+- Enums produce TypeScript union types.
+- Naming conventions: PascalCase models, camelCase fields.

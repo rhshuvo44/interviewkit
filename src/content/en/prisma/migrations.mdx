@@ -1,0 +1,173 @@
+---
+title: "Migrations and Workflow"
+description: "Prisma Migrate, dev migrations, deploy workflows, and seeding."
+---
+
+# Migrations and Workflow
+
+Prisma Migrate keeps your database schema in sync with your `schema.prisma` file. Understanding the migration workflow — particularly the difference between dev and production — is a key interview topic.
+
+---
+
+## The Migration Workflow
+
+The typical cycle:
+
+1. Edit your models in `schema.prisma`.
+2. Run `npx prisma migrate dev` to create and apply a migration.
+3. Run `npx prisma generate` to update the client (migrate dev does this automatically).
+4. Commit the generated migration SQL alongside your code.
+
+```bash
+npx prisma migrate dev          # create + apply + regenerate
+npx prisma migrate dev --name add_user_model
+```
+
+> **Interview Focus:** `migrate dev` is for development only. It creates a migration, applies it, and regenerates the client.
+
+---
+
+## How Migrations Work
+
+Each migration is a **SQL file** stored in the `prisma/migrations` folder, named with a timestamp and a description:
+
+```
+prisma/migrations/
+  ├── 20240101120000_init/
+  │     └── migration.sql
+  └── 20240102090000_add_user/
+        └── migration.sql
+```
+
+Prisma diffuses your schema changes into SQL. The migration history effectively becomes the "truth" for your database's evolution.
+
+---
+
+## Dev vs Production
+
+There are **two different commands** — a frequent point of confusion:
+
+| Context | Command | Behavior |
+|---------|---------|----------|
+| Development | `prisma migrate dev` | Creates, applies, **resets** if needed, regenerates client |
+| Production | `prisma migrate deploy` | Only applies pending migrations — does NOT create or reset |
+
+```bash
+# Local/development
+npx prisma migrate dev
+
+# Production/staging
+npx prisma migrate deploy
+```
+
+> **Interview Tip:** Never run `migrate dev` in production. Use `migrate deploy`. `migrate dev` can reset data and regenerate the client, which is unsafe in production.
+
+---
+
+## The Migration Pipeline
+
+In a typical CI/CD deployment:
+
+```yaml
+# Example deployment steps
+1. Run migrations:   npx prisma migrate deploy
+2. Build the app:    npm run build        # requires the generated client
+3. Start the server: npm start
+```
+
+> **Interview Focus:** `prisma generate` should run as part of the build step (e.g. `postinstall` or build script) so the client is up to date. `migrate deploy` runs before the app starts.
+
+---
+
+## Resetting and Resolving Drift
+
+Because Prisma is strict, your database schema should match your migration history exactly.
+
+```bash
+# Reset the database to match all migrations (WIPES DATA — dev only)
+npx prisma migrate reset
+
+# Detect drift between schema, migrations, and DB
+npx prisma migrate status
+```
+
+- **Drift** happens when the live database differs from your migration history.
+- `migrate status` shows pending/applied migrations and drift warnings.
+- `migrate reset` drops and re-applies everything (dev only, destructive).
+
+---
+
+## Seeding
+
+Seeding populates your database with initial data. Prisma uses `prisma/seed.ts` (or `seed.js`):
+
+```typescript
+// prisma/seed.ts
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+
+async function main() {
+  await prisma.user.create({
+    data: { email: "admin@example.com", name: "Admin" },
+  });
+}
+
+main()
+  .catch((e) => console.error(e))
+  .finally(() => prisma.$disconnect());
+```
+
+Configure the seed command in `package.json`:
+
+```json
+{
+  "prisma": { "seed": "tsx prisma/seed.ts" }
+}
+```
+
+Then run `npx prisma db seed`.
+
+---
+
+## The Prisma Client Lifecycle
+
+Prisma Client opens a database connection pool. Best practice is to keep a single shared instance:
+
+```typescript
+// lib/prisma.ts — reuse a single client across the app
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = global as unknown as { prisma?: PrismaClient };
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+```
+
+> **Interview Tip:** In dev with hot reload, creating a new `PrismaClient` on every request exhausts the connection pool. Reuse a singleton (the global pattern above) to avoid "Too many connections".
+
+---
+
+## .env and Configuration
+
+Database credentials live in `.env`:
+
+```
+DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"
+```
+
+- `env("DATABASE_URL")` in the schema reads this variable.
+- The `prisma-client-js` generator requires this env var at runtime.
+
+> **Interview Focus:** Never commit `.env` to source control. Prisma also supports `prisma.config.ts` for advanced client/generator configuration in newer versions.
+
+---
+
+## Interview Summary
+
+- `migrate dev` = dev-only (create + apply + may reset).
+- `migrate deploy` = production-only (apply pending migrations).
+- Migration history is stored as SQL files under `prisma/migrations`.
+- `migrate status` detects drift; `migrate reset` fixes it destructively (dev only).
+- Seeding uses `prisma db seed` with a configured seed script.
+- Reuse a single **PrismaClient** instance to avoid exhausting the connection pool.

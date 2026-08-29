@@ -12,6 +12,7 @@ export type TopicSlug =
   | "sql"
   | "postgresql"
   | "nestjs"
+  | "prisma"
   | "devops"
   | "golang";
 
@@ -102,6 +103,13 @@ export const topics: TopicMeta[] = [
     category: "Databases",
   },
   {
+    slug: "prisma",
+    title: "Prisma ORM",
+    description: "Schema, queries, relations, and database tooling.",
+    icon: "database",
+    category: "Databases",
+  },
+  {
     slug: "system-design",
     title: "System Design",
     description: "Scalability, Caching, and Load balancing.",
@@ -144,6 +152,7 @@ export const homepageTopics: TopicSlug[] = [
   "mongodb",
   "sql",
   "postgresql",
+  "prisma",
   "system-design",
   "problem-solving",
   "devops",

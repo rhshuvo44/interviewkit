@@ -73,6 +73,7 @@ const topicLabels: Record<string, string> = {
   mongodb: "MongoDB",
   sql: "SQL",
   postgresql: "PostgreSQL",
+  prisma: "Prisma ORM",
   "system-design": "System Design",
   "problem-solving": "Problem Solving",
   devops: "DevOps",

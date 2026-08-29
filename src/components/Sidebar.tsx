@@ -40,6 +40,7 @@ const topicIcons: Record<string, string> = {
   mongodb: "database",
   sql: "database",
   postgresql: "database",
+  prisma: "database",
   "system-design": "grid-3x3",
   "problem-solving": "brain",
   devops: "infinity",

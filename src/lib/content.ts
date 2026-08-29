@@ -327,6 +327,46 @@ export const contentData: Record<string, TopicContent> = {
       },
     ],
   },
+  prisma: {
+    slug: "prisma",
+    title: "Prisma ORM",
+    description:
+      "Schema, queries, relations, and database tooling.",
+    overview:
+      "Welcome to the Prisma ORM interview kit. Master Prisma's schema-driven data modeling, type-safe queries, relations, migrations, and database best practices used across modern full-stack applications.",
+    subtopics: [
+      {
+        slug: "introduction",
+        title: "Introduction to Prisma",
+        description:
+          "What Prisma is, its architecture, the Prisma Client, and how it compares to other ORMs.",
+      },
+      {
+        slug: "schema-data-modeling",
+        title: "Schema and Data Modeling",
+        description:
+          "Prisma schema syntax, models, scalar types, enums, and Prisma-specific field attributes.",
+      },
+      {
+        slug: "relations",
+        title: "Relations",
+        description:
+          "One-to-one, one-to-many, and many-to-many relations, relation fields, and referencing.",
+      },
+      {
+        slug: "queries",
+        title: "Queries with Prisma Client",
+        description:
+          "CRUD operations, filtering, sorting, pagination, relation queries, and transactions.",
+      },
+      {
+        slug: "migrations",
+        title: "Migrations and Workflow",
+        description:
+          "Prisma Migrate, dev migrations, deploy workflows, and seeding.",
+      },
+    ],
+  },
 };
 
 export function getTopicContent(topicSlug: string): TopicContent | undefined {

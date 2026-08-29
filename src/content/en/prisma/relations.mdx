@@ -1,0 +1,183 @@
+---
+title: "Relations"
+description: "One-to-one, one-to-many, and many-to-many relations, relation fields, and referencing."
+---
+
+# Relations
+
+Because Prisma is schema-first, relations are **declared in the schema** and the query engine handles the underlying foreign keys for you. Understanding how to model relations is one of the most commonly asked Prisma interview topics.
+
+---
+
+## Relation Fields
+
+Relations are defined by a pair of **relation fields** — one on each side of the relation:
+
+```prisma
+model User {
+  id    Int    @id @default(autoincrement())
+  posts Post[]
+}
+
+model Post {
+  id       Int  @id @default(autoincrement())
+  author   User @relation(fields: [authorId], references: [id])
+  authorId Int
+}
+```
+
+- `posts Post[]` on `User` — virtual field (no DB column)
+- `author User` on `Post` — a relation field backed by `authorId`
+- `@relation(fields: [authorId], references: [id])` — names the FK and what it references
+
+> **Interview Focus:** The side that holds the foreign key is the "owner" of the relation. The list side (`Post[]`) is virtual — it doesn't create a column.
+
+---
+
+## One-to-Many
+
+One user has many posts (the example above). The `references` column must be a unique key.
+
+```prisma
+model User {
+  id    Int    @id @default(autoincrement())
+  posts Post[]
+}
+
+model Post {
+  id       Int  @id @default(autoincrement())
+  author   User @relation(fields: [authorId], references: [id])
+  authorId Int
+}
+```
+
+> **Key Insight:** One-to-many is the most common relation in interviews and real apps.
+
+---
+
+## One-to-One
+
+Use `@unique` on the foreign-key side to enforce a one-to-one mapping:
+
+```prisma
+model User {
+  id    Int     @id @default(autoincrement())
+  profile Profile?
+}
+
+model Profile {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique   // <- makes it one-to-one
+}
+```
+
+- The `?` on `Profile?` makes it optional.
+- `userId @unique` guarantees each user has at most one profile.
+
+---
+
+## Many-to-Many (Implicit)
+
+Prisma's **implicit** many-to-many uses a join table automatically, with no extra model:
+
+```prisma
+model Post {
+  id      Int     @id @default(autoincrement())
+  tags    Tag[]
+}
+
+model Tag {
+  id    Int    @id @default(autoincrement())
+  posts Post[]
+}
+```
+
+Prisma creates an internal join table (`_PostToTag`) and manages it for you. You don't model the join table yourself.
+
+> **Interview Tip:** Implicit many-to-many is ideal when the join table carries no extra data.
+
+---
+
+## Many-to-Many (Explicit)
+
+Use an **explicit** join model when the relation has its own properties (e.g. a `createdAt` on the join):
+
+```prisma
+model Post {
+  id       Int            @id @default(autoincrement())
+  categories CategoriesOnPosts[]
+}
+
+model Category {
+  id    Int                  @id @default(autoincrement())
+  posts CategoriesOnPosts[]
+}
+
+// The join model carries extra data
+model CategoriesOnPosts {
+  post       Post     @relation(fields: [postId], references: [id])
+  postId     Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  assignedAt DateTime @default(now())
+
+  @@id([postId, categoryId])
+}
+```
+
+> **Interview Focus:** Choose explicit many-to-many when the relationship itself has attributes — you cannot store them on an implicit relation.
+
+---
+
+## Self-Relations
+
+A model can relate to itself (e.g. a `User` that has a manager who is also a `User`). This requires a **named relation**:
+
+```prisma
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  manager    User?    @relation("Team", fields: [managerId], references: [id])
+  managerId Int?
+  reports   User[]    @relation("Team")
+}
+```
+
+> **Interview Tip:** Ambiguous self-relations must be disambiguated by giving each `@relation(...)` a unique `name` argument.
+
+---
+
+## Referential Actions
+
+Relations use **referential actions** to define what happens on delete/update:
+
+| Action | Behavior |
+|--------|----------|
+| `Cascade` | Delete/update related rows |
+| `Restrict` | Block if related rows exist |
+| `NoAction` | Standard FK behavior (DB default) |
+| `SetNull` | Set FK to NULL |
+| `SetDefault` | Set FK to default value |
+
+```prisma
+model Comment {
+  id      Int  @id @default(autoincrement())
+  post    Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId  Int
+}
+```
+
+> **Interview Focus:** With `onDelete: Cascade`, deleting a `Post` automatically deletes its `Comment`s. `Restrict`/`NoAction` would block the delete if comments exist.
+
+---
+
+## Interview Summary
+
+- Relations are declared in the schema, not inferred from queries.
+- The side with the FK column is the relation **owner**.
+- `@unique` on an FK creates a **one-to-one**.
+- **Implicit** many-to-many auto-creates a join table (no extra data).
+- **Explicit** many-to-many uses a join model with its own fields.
+- **Self-relations** need a named `@relation("Name")`.
+- **Referential actions** (`onDelete: Cascade`, etc.) control cascade behavior.

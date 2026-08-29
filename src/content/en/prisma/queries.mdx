@@ -1,0 +1,236 @@
+---
+title: "Queries with Prisma Client"
+description: "CRUD operations, filtering, sorting, pagination, relation queries, and transactions."
+---
+
+# Queries with Prisma Client
+
+Prisma Client is the auto-generated, type-safe query builder. It turns database operations into plain, typed method calls. Understanding its query API is essential for interviews and real-world work.
+
+---
+
+## Basic CRUD
+
+```typescript
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
+
+// CREATE
+const user = await prisma.user.create({
+  data: { email: "ada@example.com", name: "Ada" },
+});
+
+// READ — many
+const users = await prisma.user.findMany();
+
+// READ — one by unique field
+const byId = await prisma.user.findUnique({ where: { id: 1 } });
+
+// READ — first match (throws if none)
+const first = await prisma.user.findFirstOrThrow({ where: { email: "a@b.c" } });
+
+// UPDATE
+const updated = await prisma.user.update({
+  where: { id: 1 },
+  data: { name: "Grace" },
+});
+
+// DELETE
+const deleted = await prisma.user.delete({ where: { id: 1 } });
+```
+
+> **Interview Focus:** The generated methods (`findMany`, `findUnique`, `create`, `update`, `delete`) map to standard CRUD. Each is fully typed based on your schema.
+
+---
+
+## Filtering with `where`
+
+Filters use Prisma's **operator objects**:
+
+```typescript
+const adults = await prisma.user.findMany({
+  where: {
+    age: { gte: 18 },        // >= 18
+    email: { contains: "@gmail.com" },
+    name: { not: null },
+  },
+});
+```
+
+### Common operators
+
+| Operator | Meaning |
+|----------|---------|
+| `equals` / `not` | Exact match / not match |
+| `in` / `notIn` | In a list |
+| `lt` / `lte` / `gt` / `gte` | Numeric comparisons |
+| `contains` | Substring match (case-sensitive) |
+| `mode: "insensitive"` | Case-insensitive |
+| `startsWith` / `endsWith` | Prefix / suffix |
+| `is` / `isNot` | Null checks |
+
+```typescript
+const results = await prisma.user.findMany({
+  where: {
+    email: { contains: "gmail", mode: "insensitive" },
+  },
+});
+```
+
+---
+
+## Selecting Fields
+
+By default Prisma returns **all** scalar fields. Use `select` to limit columns (better performance) or `include` to fetch relations:
+
+```typescript
+// Only fetch id and email
+const light = await prisma.user.findMany({
+  select: { id: true, email: true },
+});
+
+// Include the user's posts (relation query)
+const withPosts = await prisma.user.findUnique({
+  where: { id: 1 },
+  include: { posts: true },
+});
+```
+
+> **Interview Tip:** Use `select` to avoid retrieving large fields you don't need. Use `include` to eagerly load relations and avoid N+1 queries.
+
+---
+
+## Sorting and Pagination
+
+```typescript
+const page = await prisma.post.findMany({
+  orderBy: { createdAt: "desc" },
+  take: 10,      // limit
+  skip: 20,      // offset
+});
+
+// Cursor-based pagination (more stable for large datasets)
+const next = await prisma.post.findMany({
+  orderBy: { id: "asc" },
+  take: 10,
+  cursor: { id: 100 },
+});
+```
+
+| Pagination | Mechanism | Use when |
+|------------|-----------|----------|
+| Offset (`skip`/`take`) | Skip N rows | Small datasets |
+| Cursor (`cursor`/`take`) | Navigate around a row | Large, stable lists |
+
+> **Interview Focus:** Cursor-based pagination avoids the performance pitfalls of `OFFSET` on large tables and is the common interview answer for scalable pagination.
+
+---
+
+## Nested Writes
+
+Create related records in a single operation (one round trip):
+
+```typescript
+const user = await prisma.user.create({
+  data: {
+    email: "ada@example.com",
+    posts: {
+      create: [
+        { title: "Hello" },
+        { title: "World" },
+      ],
+    },
+  },
+});
+```
+
+This creates the `User` and two `Post`s atomically in one query — a signature Prisma feature.
+
+---
+
+## Aggregations
+
+```typescript
+const stats = await prisma.post.aggregate({
+  _count: { id: true },
+  _avg:   { views: true },
+  _sum:   { likes: true },
+  _min:   { createdAt: true },
+  _max:   { createdAt: true },
+});
+```
+
+You can also `count` directly:
+
+```typescript
+const count = await prisma.post.count({ where: { published: true } });
+```
+
+---
+
+## Transactions
+
+Prisma supports both **interactive** and **batch** transactions:
+
+```typescript
+// Batch — run a list of operations atomically
+await prisma.$transaction([
+  prisma.account.update({ where: { id: 1 }, data: { balance: { decrement: 100 } } }),
+  prisma.account.update({ where: { id: 2 }, data: { balance: { increment: 100 } } }),
+]);
+
+// Interactive — run arbitrary code inside a transaction
+await prisma.$transaction(async (tx) => {
+  await tx.account.update({ where: { id: 1 }, data: { balance: { decrement: 100 } } });
+  await tx.account.update({ where: { id: 2 }, data: { balance: { increment: 100 } } });
+});
+```
+
+> **Interview Focus:** In the interactive form, use the `tx` client (not the outer `prisma`) so all queries participate in the transaction. This guarantees atomic money transfers.
+
+---
+
+## Upsert
+
+`upsert` updates a row if it exists, or creates it:
+
+```typescript
+const user = await prisma.user.upsert({
+  where: { email: "ada@example.com" },
+  update: { name: "Ada Updated" },
+  create: { email: "ada@example.com", name: "Ada" },
+});
+```
+
+---
+
+## Preventing N+1
+
+The N+1 problem: fetching a list of users, then querying posts for each — one query per user.
+
+```typescript
+// BAD: implicit N+1
+for (const user of users) {
+  await prisma.post.findMany({ where: { authorId: user.id } });
+}
+
+// GOOD: eager load with include
+const usersWithPosts = await prisma.user.findMany({
+  include: { posts: true },
+});
+```
+
+> **Interview Tip:** `include` performs a single join query. This is the standard answer to "how do you avoid N+1 in Prisma?"
+
+---
+
+## Interview Summary
+
+- CRUD via generated, typed client methods.
+- Filtering with operator objects (`contains`, `gte`, `in`, etc.).
+- `select` limits columns; `include` eagerly loads relations.
+- Offset vs cursor pagination — prefer cursor for large data.
+- **Nested writes** create related rows atomically.
+- `$transaction([...])` for batch, interactive transactions for complex flows.
+- `upsert` for create-or-update.
+- Eager loading (`include`) prevents the N+1 problem.
